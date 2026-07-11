@@ -100,6 +100,20 @@ h2 {
   word-break: break-all;
 }
 
+.rule__warn {
+  display: block;
+  margin-top: 4px;
+  padding: 3px 6px;
+  width: 100%;
+  text-align: left;
+  font-size: 11px;
+  color: #fff;
+  background: var(--danger);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
 .rule__actions {
   display: flex;
   flex-direction: column;

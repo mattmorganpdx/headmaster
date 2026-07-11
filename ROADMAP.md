@@ -35,24 +35,25 @@ Items marked _(you)_ require the account owner (browser screenshots, signup).
 
 ---
 
-## M1 — Per-site host permissions · **[1.0, blocker]**
+## M1 — Per-site host permissions · **[1.0, blocker]** ✅ done
 
 Move off broad host access so review is smooth and the extension only ever
 touches sites the user explicitly configured.
 
-- [ ] `public/manifest.json`: `declarativeNetRequest` →
-      `declarativeNetRequestWithHostAccess`; drop `host_permissions:
-      ["<all_urls>"]`; add `optional_host_permissions: ["*://*/*"]` and
-      `"permissions": ["...","permissions"]`.
-- [ ] New `src/lib/permissions.ts` — `originFromUrlFilter(urlFilter)` derives an
-      origin match pattern (`||dev.example.com` → `*://dev.example.com/*`),
-      returning `null` for path/substring filters that don't map to one host.
-- [ ] Popup add/enable flow: `chrome.permissions.request({origins:[origin]})`
-      before enabling; when no single host can be derived, prompt to grant
-      `*://*/*` with a clear explanation; on denial, don't enable.
-- [ ] On delete/disable: `chrome.permissions.remove` for origins no remaining
-      rule needs. Show a per-rule granted/denied indicator.
-- [ ] Unit tests for `originFromUrlFilter`.
+- [x] `public/manifest.json`: `declarativeNetRequest` →
+      `declarativeNetRequestWithHostAccess`; dropped `host_permissions:
+      ["<all_urls>"]`; added `optional_host_permissions: ["*://*/*"]`.
+      (`chrome.permissions` needs no manifest permission entry.)
+- [x] New `src/lib/permissions.ts` — `originsFromUrlFilter(urlFilter)` derives
+      origin match pattern(s), expanding domain-anchored filters to apex +
+      subdomain and returning `null` for path/substring filters.
+- [x] Popup add/enable flow: `requestOriginsFor` calls
+      `chrome.permissions.request` before enabling; when no single host can be
+      derived it requests broad `*://*/*`; on denial the rule is left disabled.
+- [x] On delete/disable: `pruneUnusedOrigins` revokes origins no remaining rule
+      needs. A ⚠ affordance flags an enabled rule that lacks access, with
+      one-click grant.
+- [x] Unit tests for `originsFromUrlFilter` (10 cases).
 
 ## M2 — Validation & error surfacing · **[1.0, blocker]**
 

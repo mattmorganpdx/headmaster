@@ -30,6 +30,13 @@ Headmaster is built on Manifest V3
 reads your requests or responses** — a deliberate choice given the header-editor
 supply-chain incidents. There are **zero runtime dependencies**.
 
+Headmaster requests site access **per site, at runtime** rather than asking for
+all-sites access up front. When you add or enable a rule, Chrome prompts to
+grant access to just the host(s) that rule targets — so the extension only ever
+touches sites you have explicitly configured. A rule that can't be scoped to a
+single host (a path-only or substring filter) will ask for broader access, and
+an enabled rule that lacks access is flagged in the popup with a one-click grant.
+
 ## Install (unpacked)
 
 ```sh

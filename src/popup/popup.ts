@@ -1,5 +1,10 @@
 import "./popup.css";
 import { getRules, saveRules } from "../lib/storage";
+import {
+  isCoveredBy,
+  pruneUnusedOrigins,
+  requestOriginsFor,
+} from "../lib/permissions";
 import type { HeaderRule } from "../lib/types";
 
 const listEl = document.getElementById("rule-list") as HTMLElement;
@@ -14,14 +19,18 @@ const operationEl = formEl.elements.namedItem("operation") as HTMLSelectElement;
 let rules: HeaderRule[] = [];
 let editingId: string | null = null;
 
-/** Persist and re-render. The service worker reconciles DNR on save. */
+/** Persist, prune now-unused host grants, and re-render. */
 async function commit(next: HeaderRule[]): Promise<void> {
   rules = next;
   await saveRules(rules);
-  render();
+  await pruneUnusedOrigins(
+    rules.filter((r) => r.enabled).map((r) => r.urlFilter),
+  );
+  await render();
 }
 
-function render(): void {
+async function render(): Promise<void> {
+  const granted = await chrome.permissions.getAll();
   listEl.replaceChildren();
 
   if (rules.length === 0) {
@@ -33,11 +42,14 @@ function render(): void {
   }
 
   for (const rule of rules) {
-    listEl.append(renderRule(rule));
+    listEl.append(renderRule(rule, granted));
   }
 }
 
-function renderRule(rule: HeaderRule): HTMLElement {
+function renderRule(
+  rule: HeaderRule,
+  granted: chrome.permissions.Permissions,
+): HTMLElement {
   const card = document.createElement("div");
   card.className = "rule" + (rule.enabled ? "" : " rule--disabled");
 
@@ -46,11 +58,7 @@ function renderRule(rule: HeaderRule): HTMLElement {
   toggle.checked = rule.enabled;
   toggle.title = rule.enabled ? "Enabled" : "Disabled";
   toggle.addEventListener("change", () => {
-    void commit(
-      rules.map((r) =>
-        r.id === rule.id ? { ...r, enabled: toggle.checked } : r,
-      ),
-    );
+    void onToggle(rule, toggle);
   });
 
   const body = document.createElement("div");
@@ -76,6 +84,18 @@ function renderRule(rule: HeaderRule): HTMLElement {
   url.textContent = rule.urlFilter;
   body.append(url);
 
+  // An enabled rule without host access is inert — flag it so the user knows.
+  if (rule.enabled && !isCoveredBy(rule.urlFilter, granted)) {
+    const warn = document.createElement("button");
+    warn.type = "button";
+    warn.className = "rule__warn";
+    warn.textContent = "⚠ Needs site access — click to grant";
+    warn.addEventListener("click", () => {
+      void grantAccess(rule.urlFilter);
+    });
+    body.append(warn);
+  }
+
   const actions = document.createElement("div");
   actions.className = "rule__actions";
 
@@ -96,6 +116,29 @@ function renderRule(rule: HeaderRule): HTMLElement {
   actions.append(editBtn, deleteBtn);
   card.append(toggle, body, actions);
   return card;
+}
+
+/** Enable/disable a rule, requesting host access first when enabling. */
+async function onToggle(rule: HeaderRule, toggle: HTMLInputElement): Promise<void> {
+  if (toggle.checked && !(await requestOriginsFor(rule.urlFilter))) {
+    toggle.checked = false;
+    showError("Site access was denied — rule left disabled.");
+    return;
+  }
+  hideError();
+  await commit(
+    rules.map((r) => (r.id === rule.id ? { ...r, enabled: toggle.checked } : r)),
+  );
+}
+
+/** Re-request access for an already-enabled rule (from the ⚠ affordance). */
+async function grantAccess(urlFilter: string): Promise<void> {
+  if (await requestOriginsFor(urlFilter)) {
+    hideError();
+    await render();
+  } else {
+    showError("Site access was denied.");
+  }
 }
 
 function startEdit(rule: HeaderRule): void {
@@ -149,7 +192,10 @@ cancelBtn.addEventListener("click", resetForm);
 
 formEl.addEventListener("submit", (event) => {
   event.preventDefault();
+  void onSubmit();
+});
 
+async function onSubmit(): Promise<void> {
   const operation = operationEl.value as HeaderRule["operation"];
   const headerName = getField("headerName");
   const headerValue = getField("headerValue");
@@ -171,23 +217,34 @@ formEl.addEventListener("submit", (event) => {
 
   if (editingId) {
     const id = editingId;
-    void commit(rules.map((r) => (r.id === id ? { ...r, ...draft } : r)));
-  } else {
-    const rule: HeaderRule = {
-      id: crypto.randomUUID(),
-      enabled: true,
-      ...draft,
-    };
-    void commit([...rules, rule]);
+    const existing = rules.find((r) => r.id === id);
+    // If the rule is (or will remain) active, make sure we still hold access
+    // for the possibly-changed filter.
+    if (existing?.enabled && !(await requestOriginsFor(urlFilter))) {
+      return showError("Site access was denied — change not saved.");
+    }
+    await commit(rules.map((r) => (r.id === id ? { ...r, ...draft } : r)));
+    resetForm();
+    return;
   }
 
+  // New rules are enabled only if the user grants access.
+  const granted = await requestOriginsFor(urlFilter);
+  const rule: HeaderRule = {
+    id: crypto.randomUUID(),
+    enabled: granted,
+    ...draft,
+  };
+  await commit([...rules, rule]);
   resetForm();
-});
+  // Surface the denial *after* reset, which otherwise clears the message.
+  if (!granted) showError("Added as disabled — site access was denied.");
+}
 
 async function init(): Promise<void> {
   rules = await getRules();
   syncValueVisibility();
-  render();
+  await render();
 }
 
 void init();
