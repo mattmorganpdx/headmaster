@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Headmaster</title>
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>Headmaster</h1>
+      <p class="tagline">Independent header rules — every match applies.</p>
+    </header>
+
+    <main>
+      <section id="rule-list" class="rule-list" aria-label="Header rules"></section>
+
+      <section class="editor">
+        <h2 id="editor-title">Add rule</h2>
+        <form id="rule-form" autocomplete="off">
+          <label>
+            <span>Label <em>(optional)</em></span>
+            <input type="text" name="label" placeholder="Dev env header" />
+          </label>
+
+          <label>
+            <span>Header name</span>
+            <input type="text" name="headerName" placeholder="X-Env" required />
+          </label>
+
+          <label>
+            <span>Operation</span>
+            <select name="operation">
+              <option value="set">Set</option>
+              <option value="remove">Remove</option>
+            </select>
+          </label>
+
+          <label id="value-field">
+            <span>Value</span>
+            <input type="text" name="headerValue" placeholder="dev" />
+          </label>
+
+          <label>
+            <span>URL filter</span>
+            <input
+              type="text"
+              name="urlFilter"
+              placeholder="||dev.example.com"
+              required
+            />
+            <small class="hint">
+              DNR pattern. e.g. <code>||dev.example.com</code> (host),
+              <code>*/api/*</code> (path contains), <code>|https://</code>
+              (URL start).
+            </small>
+          </label>
+
+          <p id="form-error" class="error" role="alert" hidden></p>
+
+          <div class="form-actions">
+            <button type="submit" id="save-btn">Add rule</button>
+            <button type="button" id="cancel-btn" hidden>Cancel</button>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <script type="module" src="./popup.ts"></script>
+  </body>
+</html>

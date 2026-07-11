@@ -1,0 +1,178 @@
+:root {
+  --bg: #ffffff;
+  --fg: #1f2937;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --accent: #2563eb;
+  --danger: #dc2626;
+  --card: #f9fafb;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111827;
+    --fg: #f3f4f6;
+    --muted: #9ca3af;
+    --border: #374151;
+    --accent: #3b82f6;
+    --danger: #f87171;
+    --card: #1f2937;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  width: 360px;
+  margin: 0;
+  padding: 12px;
+  font: 13px/1.4 system-ui, -apple-system, sans-serif;
+  color: var(--fg);
+  background: var(--bg);
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.tagline {
+  margin: 2px 0 12px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+h2 {
+  font-size: 13px;
+  margin: 16px 0 8px;
+}
+
+.rule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.empty {
+  color: var(--muted);
+  text-align: center;
+  padding: 12px 0;
+}
+
+.rule {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px;
+  align-items: start;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+}
+
+.rule--disabled {
+  opacity: 0.55;
+}
+
+.rule input[type="checkbox"] {
+  margin-top: 2px;
+}
+
+.rule__body {
+  min-width: 0;
+}
+
+.rule__label {
+  font-weight: 600;
+}
+
+.rule__header {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  word-break: break-all;
+}
+
+.rule__url {
+  color: var(--muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  word-break: break-all;
+}
+
+.rule__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+form label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+form label > span {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+form label em {
+  font-style: normal;
+}
+
+input[type="text"],
+select {
+  width: 100%;
+  padding: 6px 8px;
+  font: inherit;
+  color: var(--fg);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.hint {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.hint code {
+  font-size: 10px;
+}
+
+.error {
+  color: var(--danger);
+  margin: 0 0 8px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+}
+
+button {
+  padding: 6px 12px;
+  font: inherit;
+  color: #fff;
+  background: var(--accent);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.rule__actions button {
+  padding: 3px 8px;
+  font-size: 11px;
+}
+
+button.danger {
+  background: var(--danger);
+}
+
+#cancel-btn {
+  background: var(--muted);
+}
