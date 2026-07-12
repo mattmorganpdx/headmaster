@@ -105,21 +105,25 @@ No rule should ever fail silently.
 - [x] `CHANGELOG.md` (Keep a Changelog); semver; packaging reads the manifest
       version to keep the shipped zip in sync.
 
-## M6 — Web Store submission · **[1.0, blocker to publish]**
+## M6 — Web Store submission · **[1.0, blocker to publish]** ✅ assets done
 
-- [ ] `docs/privacy-policy.md` served via **GitHub Pages** (public URL):
-      declares no data collected or transmitted, rules stored locally only, and a
-      contact email.
+Assets and copy are produced; the remaining `_(you)_` items need a browser or a
+Google account.
+
+- [x] `docs/privacy-policy.md` (+ `docs/index.md`) with Jekyll front matter,
+      served via **GitHub Pages** from `/docs`: declares no data collected or
+      transmitted, rules stored locally only, and a contact email.
 - [ ] Complete the **Privacy Practices** tab so disclosures match the policy
       wording _(you)_.
-- [ ] `docs/store/listing.md` — name, short summary, detailed description,
+- [x] `docs/store/listing.md` — name, short summary, detailed description,
       category **Developer Tools**, explicit single-purpose statement.
-- [ ] `docs/store/permissions-justifications.md` — justifications for
+- [x] `docs/store/permissions-justifications.md` — justifications for
       `declarativeNetRequestWithHostAccess`, `storage`, and optional host perms.
-- [ ] Produce the 440×280 promo tile (+ optional 1400×560 marquee) and 128 icon.
-- [ ] Capture up to five **1280×800** screenshots from a shot list _(you)_.
+- [x] Produced the 440×280 promo tile + 1400×560 marquee
+      (`scripts/make-promo.sh`); 128 icon ships in `public/icons/`.
+- [ ] Capture up to five **1280×800** screenshots from the shot list _(you)_.
 - [ ] Complete **$5** developer registration and submit _(you)_.
-- [ ] `docs/store/submission-checklist.md` tying it all together.
+- [x] `docs/store/submission-checklist.md` tying it all together.
 
 ---
 
