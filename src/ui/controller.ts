@@ -131,11 +131,13 @@ function renderRule(rule: HeaderRule, covered: boolean): HTMLElement {
     rule.operation === "remove"
       ? `remove ${rule.headerName}`
       : `${rule.headerName}: ${rule.headerValue}`;
+  header.title = header.textContent; // full value on hover when truncated
   body.append(header);
 
   const url = document.createElement("div");
   url.className = "rule__url";
   url.textContent = rule.urlFilter;
+  url.title = rule.urlFilter;
   body.append(url);
 
   // An enabled rule without host access is inert — flag it so the user knows.

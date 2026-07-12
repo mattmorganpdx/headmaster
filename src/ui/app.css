@@ -161,6 +161,20 @@ h2 {
   word-break: break-all;
 }
 
+/*
+ * In the narrow popup, long header values and filters would wrap into a messy
+ * block, so truncate each to a single line with an ellipsis (full text on
+ * hover via the title attribute). The roomy options page keeps them wrapped and
+ * fully visible. `.rule__body { min-width: 0 }` above lets these shrink enough
+ * for the ellipsis to take effect inside the rule grid.
+ */
+body.app--popup .rule__header,
+body.app--popup .rule__url {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .rule__warn {
   display: block;
   margin-top: 4px;

@@ -25,6 +25,9 @@ When releasing, keep `package.json` and `public/manifest.json` versions in sync
 - Open views (e.g. the popup and the options tab at once) now stay in sync via a
   storage change listener, so an edit in one is reflected in the other instead
   of a stale view overwriting it.
+- In the popup, long header values and URL filters truncate to a single line
+  with an ellipsis (full text on hover) instead of wrapping into a messy block;
+  the full-page view still shows them in full.
 - Branded icons, accessibility improvements, and a popup footer.
 - ESLint + Prettier, a release packaging script (`npm run package`), and this
   changelog.
