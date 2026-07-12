@@ -5,7 +5,9 @@ import type { HeaderRule } from "../lib/types";
 /** Reflect the number of enabled rules in the toolbar badge. */
 async function updateBadge(rules: HeaderRule[]): Promise<void> {
   const enabled = rules.filter((rule) => rule.enabled).length;
-  await chrome.action.setBadgeText({ text: enabled > 0 ? String(enabled) : "" });
+  await chrome.action.setBadgeText({
+    text: enabled > 0 ? String(enabled) : "",
+  });
   await chrome.action.setBadgeBackgroundColor({ color: "#2563eb" });
 }
 

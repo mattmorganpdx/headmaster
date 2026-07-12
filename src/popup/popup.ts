@@ -1,5 +1,10 @@
 import "./popup.css";
-import { getLastError, getRules, onLastErrorChanged, saveRules } from "../lib/storage";
+import {
+  getLastError,
+  getRules,
+  onLastErrorChanged,
+  saveRules,
+} from "../lib/storage";
 import {
   isCoveredBy,
   pruneUnusedOrigins,
@@ -26,10 +31,14 @@ const exportBtn = document.getElementById("export-btn") as HTMLButtonElement;
 const importBtn = document.getElementById("import-btn") as HTMLButtonElement;
 const importFileEl = document.getElementById("import-file") as HTMLInputElement;
 const rulesHeaderEl = document.getElementById("rules-header") as HTMLElement;
-const masterToggleEl = document.getElementById("master-toggle") as HTMLInputElement;
+const masterToggleEl = document.getElementById(
+  "master-toggle",
+) as HTMLInputElement;
 const masterLabelEl = document.getElementById("master-label") as HTMLElement;
 const versionEl = document.getElementById("version") as HTMLElement;
-const headerNameEl = formEl.elements.namedItem("headerName") as HTMLInputElement;
+const headerNameEl = formEl.elements.namedItem(
+  "headerName",
+) as HTMLInputElement;
 const operationEl = formEl.elements.namedItem("operation") as HTMLSelectElement;
 
 let rules: HeaderRule[] = [];
@@ -155,7 +164,10 @@ function renderRule(
 }
 
 /** Enable/disable a rule, requesting host access first when enabling. */
-async function onToggle(rule: HeaderRule, toggle: HTMLInputElement): Promise<void> {
+async function onToggle(
+  rule: HeaderRule,
+  toggle: HTMLInputElement,
+): Promise<void> {
   if (toggle.checked && !(await requestOriginsFor(rule.urlFilter))) {
     toggle.checked = false;
     showError("Site access was denied — rule left disabled.");
@@ -163,7 +175,9 @@ async function onToggle(rule: HeaderRule, toggle: HTMLInputElement): Promise<voi
   }
   hideError();
   await commit(
-    rules.map((r) => (r.id === rule.id ? { ...r, enabled: toggle.checked } : r)),
+    rules.map((r) =>
+      r.id === rule.id ? { ...r, enabled: toggle.checked } : r,
+    ),
   );
 }
 
@@ -330,7 +344,8 @@ async function onSubmit(): Promise<void> {
   const urlFilterError = validateUrlFilter(urlFilter);
   if (urlFilterError) return showError(urlFilterError);
   if (operation === "set") {
-    if (!headerValue) return showError("Value is required when setting a header.");
+    if (!headerValue)
+      return showError("Value is required when setting a header.");
     const headerValueError = validateHeaderValue(headerValue);
     if (headerValueError) return showError(headerValueError);
   }

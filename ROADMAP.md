@@ -42,7 +42,7 @@ touches sites the user explicitly configured.
 
 - [x] `public/manifest.json`: `declarativeNetRequest` →
       `declarativeNetRequestWithHostAccess`; dropped `host_permissions:
-      ["<all_urls>"]`; added `optional_host_permissions: ["*://*/*"]`.
+["<all_urls>"]`; added `optional_host_permissions: ["*://*/*"]`.
       (`chrome.permissions` needs no manifest permission entry.)
 - [x] New `src/lib/permissions.ts` — `originsFromUrlFilter(urlFilter)` derives
       origin match pattern(s), expanding domain-anchored filters to apex +
@@ -94,16 +94,16 @@ No rule should ever fail silently.
 - [x] README: CI + license badges and icon; added `SECURITY.md`.
       (Store screenshots are captured in M6 — they need a running browser.)
 
-## M5 — Engineering quality & release tooling · **[1.0]**
+## M5 — Engineering quality & release tooling · **[1.0]** ✅ done
 
-- [ ] Add ESLint + Prettier (dev-only) and a `lint` step to
-      `.github/workflows/ci.yml`.
-- [ ] Expand Vitest coverage: validators, io round-trip, origin derivation,
-      storage.
-- [ ] `scripts/package.mjs` — build + zip `dist/` to `headmaster-vX.Y.Z.zip`;
-      upload as a CI artifact on tag.
-- [ ] `CHANGELOG.md` (Keep a Changelog); adopt semver; keep `manifest.json`
-      version in sync.
+- [x] ESLint (flat config) + Prettier (dev-only), with `lint` and
+      `format:check` steps added to `.github/workflows/ci.yml`.
+- [x] Expanded Vitest coverage to 41 tests: validators, io round-trip, origin
+      derivation, and storage wrappers (via an in-memory chrome mock).
+- [x] `scripts/package.mjs` — build + zip `dist/` to `headmaster-v<version>.zip`
+      (version read from the manifest); uploaded as a CI artifact on `v*` tags.
+- [x] `CHANGELOG.md` (Keep a Changelog); semver; packaging reads the manifest
+      version to keep the shipped zip in sync.
 
 ## M6 — Web Store submission · **[1.0, blocker to publish]**
 

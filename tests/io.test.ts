@@ -39,7 +39,9 @@ describe("serialize/parse round-trip", () => {
   });
 
   it("assigns fresh, unique ids to imported rules", () => {
-    const parsed = parseRules(serializeRules([rule({ id: "x" }), rule({ id: "x" })]));
+    const parsed = parseRules(
+      serializeRules([rule({ id: "x" }), rule({ id: "x" })]),
+    );
     expect(parsed[0].id).not.toBe("x");
     expect(parsed[0].id).not.toBe(parsed[1].id);
   });
@@ -65,7 +67,14 @@ describe("parseRules rejects malformed input", () => {
   it("invalid header name", () => {
     const bad = JSON.stringify({
       version: 1,
-      rules: [{ operation: "set", headerName: "X Env", headerValue: "v", urlFilter: "||a.com" }],
+      rules: [
+        {
+          operation: "set",
+          headerName: "X Env",
+          headerValue: "v",
+          urlFilter: "||a.com",
+        },
+      ],
     });
     expect(() => parseRules(bad)).toThrow(/Rule 1/);
   });
@@ -102,7 +111,9 @@ describe("parseRules rejects malformed input", () => {
   it("invalid operation", () => {
     const bad = JSON.stringify({
       version: 1,
-      rules: [{ operation: "append", headerName: "X-Env", urlFilter: "||a.com" }],
+      rules: [
+        { operation: "append", headerName: "X-Env", urlFilter: "||a.com" },
+      ],
     });
     expect(() => parseRules(bad)).toThrow(/operation/i);
   });

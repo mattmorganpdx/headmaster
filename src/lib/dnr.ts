@@ -58,7 +58,11 @@ export function toDnrRule(rule: HeaderRule, id: number): DnrRule {
       type: "modifyHeaders",
       requestHeaders: [
         rule.operation === "set"
-          ? { header: rule.headerName, operation: "set", value: rule.headerValue }
+          ? {
+              header: rule.headerName,
+              operation: "set",
+              value: rule.headerValue,
+            }
           : { header: rule.headerName, operation: "remove" },
       ],
     },
@@ -94,6 +98,8 @@ export async function syncDynamicRules(rules: HeaderRule[]): Promise<void> {
     removeRuleIds: existing.map((rule) => rule.id),
     // Cast at the Chrome boundary only: our DnrRule uses string literals where
     // @types/chrome expects its runtime enums; the values are identical.
-    addRules: buildAddRules(rules) as unknown as chrome.declarativeNetRequest.Rule[],
+    addRules: buildAddRules(
+      rules,
+    ) as unknown as chrome.declarativeNetRequest.Rule[],
   });
 }

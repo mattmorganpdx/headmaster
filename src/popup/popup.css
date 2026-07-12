@@ -28,7 +28,10 @@ body {
   width: 360px;
   margin: 0;
   padding: 12px;
-  font: 13px/1.4 system-ui, -apple-system, sans-serif;
+  font:
+    13px/1.4 system-ui,
+    -apple-system,
+    sans-serif;
   color: var(--fg);
   background: var(--bg);
 }

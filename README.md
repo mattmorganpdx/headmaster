@@ -15,15 +15,15 @@ pattern matches.
 
 [ModHeader](https://modheader.com/) and [Headerly](https://headerly.dev/) both
 force a **single active profile**: headers only fire when their profile is
-active *and* the URL matches. That makes a common case awkward — sending the
+active _and_ the URL matches. That makes a common case awkward — sending the
 **same header name with different values to different environments**
 simultaneously:
 
-| Header  | Value     | Applies to                 |
-| ------- | --------- | -------------------------- |
-| `X-Env` | `dev`     | `\|\|dev.example.com`      |
-| `X-Env` | `staging` | `\|\|staging.example.com`  |
-| `X-Env` | `prod`    | `\|\|example.com`          |
+| Header  | Value     | Applies to                |
+| ------- | --------- | ------------------------- |
+| `X-Env` | `dev`     | `\|\|dev.example.com`     |
+| `X-Env` | `staging` | `\|\|staging.example.com` |
+| `X-Env` | `prod`    | `\|\|example.com`         |
 
 In Headmaster these are just three enabled rules. Chrome evaluates all of them
 per request, so each fires on its own host — no profile switching.
@@ -63,12 +63,12 @@ The URL filter uses DNR's
 [`urlFilter`](https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#property-RuleCondition-urlFilter)
 patterns (not content-script match patterns):
 
-| Pattern                | Matches                                    |
-| ---------------------- | ------------------------------------------ |
-| `\|\|dev.example.com`  | requests to that host (domain-anchored)    |
-| `\|https://`           | anchored to the start of the URL           |
-| `*/api/*`              | any URL whose path contains `/api/`        |
-| `example.com`          | substring match anywhere in the URL        |
+| Pattern               | Matches                                 |
+| --------------------- | --------------------------------------- |
+| `\|\|dev.example.com` | requests to that host (domain-anchored) |
+| `\|https://`          | anchored to the start of the URL        |
+| `*/api/*`             | any URL whose path contains `/api/`     |
+| `example.com`         | substring match anywhere in the URL     |
 
 `*` is a wildcard; `\|` anchors the start/end; `\|\|` anchors a domain.
 

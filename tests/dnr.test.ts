@@ -23,9 +23,7 @@ describe("toDnrRule", () => {
       priority: 1,
       action: {
         type: "modifyHeaders",
-        requestHeaders: [
-          { header: "X-Env", operation: "set", value: "dev" },
-        ],
+        requestHeaders: [{ header: "X-Env", operation: "set", value: "dev" }],
       },
       condition: { urlFilter: "||dev.example.com" },
     });
@@ -51,9 +49,10 @@ describe("buildAddRules", () => {
     ];
     const built = buildAddRules(rules);
     expect(built.map((r) => r.id)).toEqual([1, 2]);
-    expect(
-      built.map((r) => r.action.requestHeaders?.[0].value),
-    ).toEqual(["dev", "prod"]);
+    expect(built.map((r) => r.action.requestHeaders?.[0].value)).toEqual([
+      "dev",
+      "prod",
+    ]);
   });
 
   it("supports the same header name across multiple rules (no profiles)", () => {
@@ -64,9 +63,9 @@ describe("buildAddRules", () => {
     ];
     const built = buildAddRules(rules);
     expect(built).toHaveLength(3);
-    expect(built.every((r) => r.action.requestHeaders?.[0].header === "X-Env")).toBe(
-      true,
-    );
+    expect(
+      built.every((r) => r.action.requestHeaders?.[0].header === "X-Env"),
+    ).toBe(true);
     expect(built.map((r) => r.condition.urlFilter)).toEqual([
       "||dev.example.com",
       "||stg.example.com",
