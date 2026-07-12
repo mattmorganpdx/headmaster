@@ -187,12 +187,15 @@ async function tryRequestOrigins(urlFilter: string): Promise<boolean> {
   }
 }
 
-/** Insert a disabled copy of a rule right after it. */
+/**
+ * Insert a copy of a rule right after it. The copy inherits the original's
+ * enabled state — it reuses the same URL filter, so host access is already
+ * granted when the original is enabled and no new prompt is needed.
+ */
 function duplicateRule(rule: HeaderRule): void {
   const copy: HeaderRule = {
     ...rule,
     id: crypto.randomUUID(),
-    enabled: false,
     label: rule.label ? `${rule.label} (copy)` : "",
   };
   const index = rules.findIndex((r) => r.id === rule.id);

@@ -31,6 +31,9 @@ When releasing, keep `package.json` and `public/manifest.json` versions in sync
   clicked. Access checks use `chrome.permissions.contains` instead of matching
   origin strings, which Chrome normalizes; permissions are no longer
   auto-revoked on rule changes (which could drop a just-granted origin).
+- Duplicating a rule now inherits the original's enabled state (it reuses the
+  same URL filter, so access is already granted) instead of creating a
+  disabled/greyed-out copy.
 
 ## [0.1.0] - 2026-07-10
 
