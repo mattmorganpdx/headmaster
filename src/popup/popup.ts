@@ -6,8 +6,7 @@ import {
   saveRules,
 } from "../lib/storage";
 import {
-  isCoveredBy,
-  pruneUnusedOrigins,
+  hasAccessFor,
   requestOriginsFor,
   targetOriginsFor,
 } from "../lib/permissions";
@@ -44,18 +43,14 @@ const operationEl = formEl.elements.namedItem("operation") as HTMLSelectElement;
 let rules: HeaderRule[] = [];
 let editingId: string | null = null;
 
-/** Persist, prune now-unused host grants, and re-render. */
+/** Persist and re-render. The service worker reconciles DNR on the change. */
 async function commit(next: HeaderRule[]): Promise<void> {
   rules = next;
   await saveRules(rules);
-  await pruneUnusedOrigins(
-    rules.filter((r) => r.enabled).map((r) => r.urlFilter),
-  );
   await render();
 }
 
 async function render(): Promise<void> {
-  const granted = await chrome.permissions.getAll();
   listEl.replaceChildren();
   renderMasterToggle();
 
@@ -67,9 +62,14 @@ async function render(): Promise<void> {
     return;
   }
 
-  for (const rule of rules) {
-    listEl.append(renderRule(rule, granted));
-  }
+  // Resolve host-access coverage for each rule (semantically, via
+  // permissions.contains) before rendering the ⚠ affordances.
+  const coverage = await Promise.all(
+    rules.map((rule) => hasAccessFor(rule.urlFilter)),
+  );
+  rules.forEach((rule, index) => {
+    listEl.append(renderRule(rule, coverage[index]));
+  });
 }
 
 /** Reflect the aggregate enabled state in the master toggle. */
@@ -84,10 +84,7 @@ function renderMasterToggle(): void {
   masterLabelEl.textContent = allEnabled ? "Disable all" : "Enable all";
 }
 
-function renderRule(
-  rule: HeaderRule,
-  granted: chrome.permissions.Permissions,
-): HTMLElement {
+function renderRule(rule: HeaderRule, covered: boolean): HTMLElement {
   const card = document.createElement("div");
   card.className = "rule" + (rule.enabled ? "" : " rule--disabled");
 
@@ -125,7 +122,7 @@ function renderRule(
   body.append(url);
 
   // An enabled rule without host access is inert — flag it so the user knows.
-  if (rule.enabled && !isCoveredBy(rule.urlFilter, granted)) {
+  if (rule.enabled && !covered) {
     const warn = document.createElement("button");
     warn.type = "button";
     warn.className = "rule__warn";
@@ -168,17 +165,24 @@ async function onToggle(
   rule: HeaderRule,
   toggle: HTMLInputElement,
 ): Promise<void> {
-  if (toggle.checked && !(await requestOriginsFor(rule.urlFilter))) {
+  if (toggle.checked && !(await tryRequestOrigins(rule.urlFilter))) {
     toggle.checked = false;
     showError("Site access was denied — rule left disabled.");
     return;
   }
   hideError();
   await commit(
-    rules.map((r) =>
-      r.id === rule.id ? { ...r, enabled: toggle.checked } : r,
-    ),
+    rules.map((r) => (r.id === rule.id ? { ...r, enabled: toggle.checked } : r)),
   );
+}
+
+/** requestOriginsFor, but never throws — a rejected request counts as denied. */
+async function tryRequestOrigins(urlFilter: string): Promise<boolean> {
+  try {
+    return await requestOriginsFor(urlFilter);
+  } catch {
+    return false;
+  }
 }
 
 /** Insert a disabled copy of a rule right after it. */
@@ -210,17 +214,22 @@ async function onMasterToggle(): Promise<void> {
     }
   }
   if (origins.size > 0) {
-    await chrome.permissions.request({ origins: [...origins] });
+    try {
+      await chrome.permissions.request({ origins: [...origins] });
+    } catch {
+      /* denial/failure is reflected by the per-rule coverage check below */
+    }
   }
-  const granted = await chrome.permissions.getAll();
-  await commit(
-    rules.map((r) => ({ ...r, enabled: isCoveredBy(r.urlFilter, granted) })),
+  // Enable each rule only where access is actually held now.
+  const flags = await Promise.all(
+    rules.map((rule) => hasAccessFor(rule.urlFilter)),
   );
+  await commit(rules.map((r, i) => ({ ...r, enabled: flags[i] })));
 }
 
 /** Re-request access for an already-enabled rule (from the ⚠ affordance). */
 async function grantAccess(urlFilter: string): Promise<void> {
-  if (await requestOriginsFor(urlFilter)) {
+  if (await tryRequestOrigins(urlFilter)) {
     hideError();
     await render();
   } else {
@@ -363,7 +372,7 @@ async function onSubmit(): Promise<void> {
     const existing = rules.find((r) => r.id === id);
     // If the rule is (or will remain) active, make sure we still hold access
     // for the possibly-changed filter.
-    if (existing?.enabled && !(await requestOriginsFor(urlFilter))) {
+    if (existing?.enabled && !(await tryRequestOrigins(urlFilter))) {
       return showError("Site access was denied — change not saved.");
     }
     await commit(rules.map((r) => (r.id === id ? { ...r, ...draft } : r)));
@@ -372,7 +381,7 @@ async function onSubmit(): Promise<void> {
   }
 
   // New rules are enabled only if the user grants access.
-  const granted = await requestOriginsFor(urlFilter);
+  const granted = await tryRequestOrigins(urlFilter);
   const rule: HeaderRule = {
     id: crypto.randomUUID(),
     enabled: granted,

@@ -22,6 +22,16 @@ When releasing, keep `package.json` and `public/manifest.json` versions in sync
 - ESLint + Prettier, a release packaging script (`npm run package`), and this
   changelog.
 
+### Fixed
+
+- Deleting a rule now updates the popup immediately (it previously only updated
+  after reopening, because host-permission cleanup could throw and abort the
+  re-render).
+- The "⚠ Needs site access" affordance now reflects real coverage and works when
+  clicked. Access checks use `chrome.permissions.contains` instead of matching
+  origin strings, which Chrome normalizes; permissions are no longer
+  auto-revoked on rule changes (which could drop a just-granted origin).
+
 ## [0.1.0] - 2026-07-10
 
 ### Added

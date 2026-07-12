@@ -89,39 +89,19 @@ export function requestOriginsFor(urlFilter: string): Promise<boolean> {
 }
 
 /**
- * Whether the currently-granted permissions cover a filter. `granted` is a
- * snapshot from `chrome.permissions.getAll()`; broad access covers everything.
+ * Whether host access for a filter is currently granted.
+ *
+ * Uses `chrome.permissions.contains`, which checks coverage *semantically* — a
+ * broad grant covers a specific origin, and it is immune to how Chrome
+ * normalizes stored origin strings (an exact string match against
+ * `getAll().origins` is not reliable). Resolves `false` on any error.
  */
-export function isCoveredBy(
-  urlFilter: string,
-  granted: chrome.permissions.Permissions,
-): boolean {
-  const have = granted.origins ?? [];
-  if (have.includes(BROAD_ORIGIN)) return true;
-  return targetOriginsFor(urlFilter).every((origin) => have.includes(origin));
-}
-
-/**
- * Revoke any granted origins no longer needed by an enabled rule. Never removes
- * the broad grant (a filter with no anchorable host may rely on it, and pruning
- * it would cause surprising re-prompts).
- */
-export async function pruneUnusedOrigins(
-  enabledUrlFilters: string[],
-): Promise<void> {
-  const needed = new Set<string>();
-  for (const filter of enabledUrlFilters) {
-    for (const origin of originsFromUrlFilter(filter) ?? []) {
-      needed.add(origin);
-    }
-  }
-
-  const current = await chrome.permissions.getAll();
-  const toRemove = (current.origins ?? []).filter(
-    (origin) => origin !== BROAD_ORIGIN && !needed.has(origin),
-  );
-
-  if (toRemove.length > 0) {
-    await chrome.permissions.remove({ origins: toRemove });
+export async function hasAccessFor(urlFilter: string): Promise<boolean> {
+  try {
+    return await chrome.permissions.contains({
+      origins: targetOriginsFor(urlFilter),
+    });
+  } catch {
+    return false;
   }
 }
