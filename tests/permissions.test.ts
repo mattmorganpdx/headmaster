@@ -40,6 +40,16 @@ describe("originsFromUrlFilter", () => {
     ]);
   });
 
+  it("treats a DNR separator (^) or end anchor (|) as a host boundary", () => {
+    expect(originsFromUrlFilter("||example.com^")).toEqual([
+      "*://example.com/*",
+      "*://*.example.com/*",
+    ]);
+    expect(originsFromUrlFilter("|https://example.com|")).toEqual([
+      "*://example.com/*",
+    ]);
+  });
+
   it("returns null for path-only or wildcard-led filters", () => {
     expect(originsFromUrlFilter("*/api/*")).toBeNull();
     expect(originsFromUrlFilter("/api/")).toBeNull();

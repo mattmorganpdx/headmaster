@@ -66,8 +66,9 @@ export function originsFromUrlFilter(urlFilter: string): string[] | null {
     return null;
   }
 
-  // The host runs until the first path/query/fragment/port/wildcard delimiter.
-  const host = s.split(/[/*?#:]/, 1)[0] ?? "";
+  // The host runs until the first path/query/fragment/port/wildcard delimiter,
+  // or a DNR separator (`^`) / end anchor (`|`).
+  const host = s.split(/[/*?#:^|]/, 1)[0] ?? "";
   if (!isLikelyHost(host)) return null;
 
   return domainAnchored

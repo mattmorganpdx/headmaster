@@ -37,6 +37,8 @@ When releasing, keep `package.json` and `public/manifest.json` versions in sync
 - The master toggle's label now describes state ("All enabled" / "All disabled" /
   "N of M enabled") instead of the action, so a checked box no longer sits next
   to the word "Disable".
+- URL filters using a DNR separator (`^`) or end anchor (`|`) now request access
+  to the specific host instead of falling back to broad all-sites access.
 
 ## [0.1.0] - 2026-07-10
 

@@ -63,9 +63,12 @@ async function render(): Promise<void> {
   }
 
   // Resolve host-access coverage for each rule (semantically, via
-  // permissions.contains) before rendering the ⚠ affordances.
+  // permissions.contains) before rendering the ⚠ affordances. Only enabled
+  // rules can show the warning, so skip the check for disabled ones.
   const coverage = await Promise.all(
-    rules.map((rule) => hasAccessFor(rule.urlFilter)),
+    rules.map((rule) =>
+      rule.enabled ? hasAccessFor(rule.urlFilter) : Promise.resolve(true),
+    ),
   );
   rules.forEach((rule, index) => {
     listEl.append(renderRule(rule, coverage[index]));
