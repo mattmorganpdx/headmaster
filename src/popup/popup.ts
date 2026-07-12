@@ -1,10 +1,15 @@
 import "./popup.css";
-import { getRules, saveRules } from "../lib/storage";
+import { getLastError, getRules, onLastErrorChanged, saveRules } from "../lib/storage";
 import {
   isCoveredBy,
   pruneUnusedOrigins,
   requestOriginsFor,
 } from "../lib/permissions";
+import {
+  validateHeaderName,
+  validateHeaderValue,
+  validateUrlFilter,
+} from "../lib/validate";
 import type { HeaderRule } from "../lib/types";
 
 const listEl = document.getElementById("rule-list") as HTMLElement;
@@ -14,6 +19,7 @@ const saveBtn = document.getElementById("save-btn") as HTMLButtonElement;
 const cancelBtn = document.getElementById("cancel-btn") as HTMLButtonElement;
 const valueField = document.getElementById("value-field") as HTMLElement;
 const errorEl = document.getElementById("form-error") as HTMLElement;
+const statusEl = document.getElementById("sync-status") as HTMLElement;
 const operationEl = formEl.elements.namedItem("operation") as HTMLSelectElement;
 
 let rules: HeaderRule[] = [];
@@ -187,6 +193,16 @@ function hideError(): void {
   errorEl.hidden = true;
 }
 
+/** Show or clear the DNR sync-failure banner reported by the service worker. */
+function renderSyncStatus(message: string | null): void {
+  if (message) {
+    statusEl.textContent = `Couldn't apply rules: ${message}`;
+    statusEl.hidden = false;
+  } else {
+    statusEl.hidden = true;
+  }
+}
+
 operationEl.addEventListener("change", syncValueVisibility);
 cancelBtn.addEventListener("click", resetForm);
 
@@ -201,10 +217,14 @@ async function onSubmit(): Promise<void> {
   const headerValue = getField("headerValue");
   const urlFilter = getField("urlFilter");
 
-  if (!headerName) return showError("Header name is required.");
-  if (!urlFilter) return showError("URL filter is required.");
-  if (operation === "set" && !headerValue) {
-    return showError("Value is required when setting a header.");
+  const headerNameError = validateHeaderName(headerName);
+  if (headerNameError) return showError(headerNameError);
+  const urlFilterError = validateUrlFilter(urlFilter);
+  if (urlFilterError) return showError(urlFilterError);
+  if (operation === "set") {
+    if (!headerValue) return showError("Value is required when setting a header.");
+    const headerValueError = validateHeaderValue(headerValue);
+    if (headerValueError) return showError(headerValueError);
   }
 
   const draft: Omit<HeaderRule, "id" | "enabled"> = {
@@ -244,6 +264,8 @@ async function onSubmit(): Promise<void> {
 async function init(): Promise<void> {
   rules = await getRules();
   syncValueVisibility();
+  renderSyncStatus(await getLastError());
+  onLastErrorChanged(renderSyncStatus);
   await render();
 }
 

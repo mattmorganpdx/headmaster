@@ -55,17 +55,19 @@ touches sites the user explicitly configured.
       one-click grant.
 - [x] Unit tests for `originsFromUrlFilter` (10 cases).
 
-## M2 — Validation & error surfacing · **[1.0, blocker]**
+## M2 — Validation & error surfacing · **[1.0, blocker]** ✅ done
 
 No rule should ever fail silently.
 
-- [ ] New `src/lib/validate.ts` — `validateHeaderName` (RFC 7230 token chars) and
-      `validateUrlFilter` (structural checks); wire into the `popup.ts` submit
-      handler using the existing `showError`.
-- [ ] `src/background/service-worker.ts`: wrap `syncDynamicRules` in try/catch
-      and write a `lastError` status to `chrome.storage.local`; the popup
-      subscribes and displays it via an `aria-live` region.
-- [ ] Unit tests for both validators.
+- [x] New `src/lib/validate.ts` — `validateHeaderName` (RFC 7230 token chars),
+      `validateHeaderValue` (rejects control chars / header injection), and
+      `validateUrlFilter` (printable-ASCII, no whitespace); wired into the
+      `popup.ts` submit handler via the existing `showError`.
+- [x] `src/background/service-worker.ts`: `reconcile` captures sync failures and
+      writes a `lastError` status to `chrome.storage.local` (best-effort, no
+      unhandled rejections); the popup subscribes via `onLastErrorChanged` and
+      shows it in an `aria-live` banner.
+- [x] Unit tests for all three validators (9 cases).
 
 ## M3 — Config export / import · **[1.0]**
 

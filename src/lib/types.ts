@@ -28,3 +28,6 @@ export interface HeaderRule {
 }
 
 export const STORAGE_KEY = "rules" as const;
+
+/** Storage key holding the most recent DNR sync error (or null when healthy). */
+export const LAST_ERROR_KEY = "lastError" as const;

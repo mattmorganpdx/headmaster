@@ -1,5 +1,5 @@
 import { syncDynamicRules } from "../lib/dnr";
-import { getRules, onRulesChanged } from "../lib/storage";
+import { getRules, onRulesChanged, setLastError } from "../lib/storage";
 import type { HeaderRule } from "../lib/types";
 
 /** Reflect the number of enabled rules in the toolbar badge. */
@@ -9,11 +9,33 @@ async function updateBadge(rules: HeaderRule[]): Promise<void> {
   await chrome.action.setBadgeBackgroundColor({ color: "#2563eb" });
 }
 
-/** Recompute DNR rules and badge from the current stored rules. */
-async function reconcile(): Promise<void> {
-  const rules = await getRules();
-  await syncDynamicRules(rules);
-  await updateBadge(rules);
+/**
+ * Recompute DNR rules and badge from the current stored rules, recording any
+ * sync failure so the popup can surface it (and clearing it on success).
+ */
+async function reconcile(rules?: HeaderRule[]): Promise<void> {
+  const list = rules ?? (await getRules());
+
+  let message: string | null = null;
+  try {
+    await syncDynamicRules(list);
+  } catch (error) {
+    // Always keep a non-empty message so the popup never mistakes a failure
+    // for a healthy state.
+    message =
+      error instanceof Error && error.message
+        ? error.message
+        : "Failed to apply rules.";
+  }
+
+  // Persisting the status and updating the badge are best-effort; a failure
+  // here isn't recoverable and must not become an unhandled rejection.
+  try {
+    await setLastError(message);
+    await updateBadge(list);
+  } catch {
+    /* ignore */
+  }
 }
 
 // Rebuild dynamic rules on install and on browser startup so the active rule
@@ -24,6 +46,4 @@ chrome.runtime.onStartup.addListener(() => void reconcile());
 
 // The popup only writes to storage; this listener turns those writes into DNR
 // updates. storage.onChanged wakes the service worker if it was dormant.
-onRulesChanged((rules) => {
-  void syncDynamicRules(rules).then(() => updateBadge(rules));
-});
+onRulesChanged((rules) => void reconcile(rules));
