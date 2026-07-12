@@ -249,6 +249,23 @@ async function onMasterToggle(): Promise<void> {
   await commit(rules.map((r, i) => ({ ...r, enabled: flags[i] })));
 }
 
+/**
+ * Open the full-page manager. Prefer `openOptionsPage` (which focuses an
+ * existing tab), but fall back to opening the page URL directly if that fails —
+ * e.g. when the loaded extension still has a manifest without `options_ui`.
+ */
+function openFullView(): void {
+  const fallback = () =>
+    window.open(chrome.runtime.getURL("options/options.html"));
+  try {
+    chrome.runtime.openOptionsPage(() => {
+      if (chrome.runtime.lastError) fallback();
+    });
+  } catch {
+    fallback();
+  }
+}
+
 /** Re-request access for an already-enabled rule (from the ⚠ affordance). */
 async function grantAccess(urlFilter: string): Promise<void> {
   if (await tryRequestOrigins(urlFilter)) {
@@ -446,7 +463,7 @@ export async function initApp(): Promise<void> {
   // options page itself, so wiring it unconditionally is safe.
   document
     .getElementById("open-full-view")
-    ?.addEventListener("click", () => chrome.runtime.openOptionsPage());
+    ?.addEventListener("click", openFullView);
 
   versionEl.textContent = `v${chrome.runtime.getManifest().version}`;
   rules = await getRules();
