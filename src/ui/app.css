@@ -25,15 +25,34 @@
 }
 
 body {
-  width: 360px;
   margin: 0;
-  padding: 12px;
   font:
     13px/1.4 system-ui,
     -apple-system,
     sans-serif;
   color: var(--fg);
   background: var(--bg);
+}
+
+/* Popup: a compact fixed-width panel. */
+body.app--popup {
+  width: 360px;
+  padding: 12px;
+}
+
+/* Options: a roomy, centered full page. */
+body.app--options {
+  padding: 24px 20px;
+}
+
+body.app--options #app-root {
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+body.app--options .rule-list {
+  max-height: none;
+  overflow: visible;
 }
 
 .app-header h1 {
@@ -244,6 +263,27 @@ button.danger {
   color: var(--muted);
 }
 
+.app-footer__links {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .app-footer a {
   color: var(--accent);
+}
+
+/* Text-styled button used for the footer "open full view" affordance. */
+.linklike {
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
+}
+
+/* The full-page view has no need to link to itself. */
+body.app--options .open-full-view {
+  display: none;
 }

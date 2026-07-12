@@ -18,6 +18,10 @@ When releasing, keep `package.json` and `public/manifest.json` versions in sync
   banner surfacing any `declarativeNetRequest` failure.
 - JSON export / import of rules, with shape validation and a size cap.
 - Master enable-all / disable-all toggle and per-rule duplicate action.
+- Full-page options view (opens in a tab) that shares the popup's UI in a roomy
+  layout; the popup gains an "Open full view" link. The full page also makes the
+  site-access grant flow more reliable (a tab isn't dismissed by the permission
+  prompt the way a popup can be).
 - Branded icons, accessibility improvements, and a popup footer.
 - ESLint + Prettier, a release packaging script (`npm run package`), and this
   changelog.

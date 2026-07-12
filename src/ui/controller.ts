@@ -1,4 +1,5 @@
-import "./popup.css";
+import "./app.css";
+import { APP_HTML } from "./template";
 import {
   getLastError,
   getRules,
@@ -18,27 +19,24 @@ import {
 import { parseRules, serializeRules } from "../lib/io";
 import type { HeaderRule } from "../lib/types";
 
-const listEl = document.getElementById("rule-list") as HTMLElement;
-const formEl = document.getElementById("rule-form") as HTMLFormElement;
-const titleEl = document.getElementById("editor-title") as HTMLElement;
-const saveBtn = document.getElementById("save-btn") as HTMLButtonElement;
-const cancelBtn = document.getElementById("cancel-btn") as HTMLButtonElement;
-const valueField = document.getElementById("value-field") as HTMLElement;
-const errorEl = document.getElementById("form-error") as HTMLElement;
-const statusEl = document.getElementById("sync-status") as HTMLElement;
-const exportBtn = document.getElementById("export-btn") as HTMLButtonElement;
-const importBtn = document.getElementById("import-btn") as HTMLButtonElement;
-const importFileEl = document.getElementById("import-file") as HTMLInputElement;
-const rulesHeaderEl = document.getElementById("rules-header") as HTMLElement;
-const masterToggleEl = document.getElementById(
-  "master-toggle",
-) as HTMLInputElement;
-const masterLabelEl = document.getElementById("master-label") as HTMLElement;
-const versionEl = document.getElementById("version") as HTMLElement;
-const headerNameEl = formEl.elements.namedItem(
-  "headerName",
-) as HTMLInputElement;
-const operationEl = formEl.elements.namedItem("operation") as HTMLSelectElement;
+// Element references, assigned in initApp() once the template is injected.
+let listEl: HTMLElement;
+let formEl: HTMLFormElement;
+let titleEl: HTMLElement;
+let saveBtn: HTMLButtonElement;
+let cancelBtn: HTMLButtonElement;
+let valueField: HTMLElement;
+let errorEl: HTMLElement;
+let statusEl: HTMLElement;
+let exportBtn: HTMLButtonElement;
+let importBtn: HTMLButtonElement;
+let importFileEl: HTMLInputElement;
+let rulesHeaderEl: HTMLElement;
+let masterToggleEl: HTMLInputElement;
+let masterLabelEl: HTMLElement;
+let versionEl: HTMLElement;
+let headerNameEl: HTMLInputElement;
+let operationEl: HTMLSelectElement;
 
 let rules: HeaderRule[] = [];
 let editingId: string | null = null;
@@ -343,22 +341,6 @@ async function importRules(file: File): Promise<void> {
   // here because awaiting the file read broke the original gesture chain.
 }
 
-operationEl.addEventListener("change", syncValueVisibility);
-cancelBtn.addEventListener("click", resetForm);
-masterToggleEl.addEventListener("change", () => void onMasterToggle());
-exportBtn.addEventListener("click", exportRules);
-importBtn.addEventListener("click", () => importFileEl.click());
-importFileEl.addEventListener("change", () => {
-  const file = importFileEl.files?.[0];
-  if (file) void importRules(file);
-  importFileEl.value = ""; // allow re-selecting the same file
-});
-
-formEl.addEventListener("submit", (event) => {
-  event.preventDefault();
-  void onSubmit();
-});
-
 async function onSubmit(): Promise<void> {
   const operation = operationEl.value as HeaderRule["operation"];
   const headerName = getField("headerName");
@@ -411,7 +393,54 @@ async function onSubmit(): Promise<void> {
   if (!granted) showError("Added as disabled — site access was denied.");
 }
 
-async function init(): Promise<void> {
+/**
+ * Render the UI into `#app-root` and wire it up. Shared verbatim by the popup
+ * and the full-page options view.
+ */
+export async function initApp(): Promise<void> {
+  const root = document.getElementById("app-root");
+  if (!root) throw new Error("Missing #app-root");
+  root.innerHTML = APP_HTML;
+
+  listEl = document.getElementById("rule-list") as HTMLElement;
+  formEl = document.getElementById("rule-form") as HTMLFormElement;
+  titleEl = document.getElementById("editor-title") as HTMLElement;
+  saveBtn = document.getElementById("save-btn") as HTMLButtonElement;
+  cancelBtn = document.getElementById("cancel-btn") as HTMLButtonElement;
+  valueField = document.getElementById("value-field") as HTMLElement;
+  errorEl = document.getElementById("form-error") as HTMLElement;
+  statusEl = document.getElementById("sync-status") as HTMLElement;
+  exportBtn = document.getElementById("export-btn") as HTMLButtonElement;
+  importBtn = document.getElementById("import-btn") as HTMLButtonElement;
+  importFileEl = document.getElementById("import-file") as HTMLInputElement;
+  rulesHeaderEl = document.getElementById("rules-header") as HTMLElement;
+  masterToggleEl = document.getElementById("master-toggle") as HTMLInputElement;
+  masterLabelEl = document.getElementById("master-label") as HTMLElement;
+  versionEl = document.getElementById("version") as HTMLElement;
+  headerNameEl = formEl.elements.namedItem("headerName") as HTMLInputElement;
+  operationEl = formEl.elements.namedItem("operation") as HTMLSelectElement;
+
+  operationEl.addEventListener("change", syncValueVisibility);
+  cancelBtn.addEventListener("click", resetForm);
+  masterToggleEl.addEventListener("change", () => void onMasterToggle());
+  exportBtn.addEventListener("click", exportRules);
+  importBtn.addEventListener("click", () => importFileEl.click());
+  importFileEl.addEventListener("change", () => {
+    const file = importFileEl.files?.[0];
+    if (file) void importRules(file);
+    importFileEl.value = ""; // allow re-selecting the same file
+  });
+  formEl.addEventListener("submit", (event) => {
+    event.preventDefault();
+    void onSubmit();
+  });
+
+  // "Open full view" opens the options page in a tab. It's hidden by CSS on the
+  // options page itself, so wiring it unconditionally is safe.
+  document
+    .getElementById("open-full-view")
+    ?.addEventListener("click", () => chrome.runtime.openOptionsPage());
+
   versionEl.textContent = `v${chrome.runtime.getManifest().version}`;
   rules = await getRules();
   syncValueVisibility();
@@ -419,5 +448,3 @@ async function init(): Promise<void> {
   onLastErrorChanged(renderSyncStatus);
   await render();
 }
-
-void init();

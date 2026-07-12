@@ -54,9 +54,11 @@ Google account, or payment).
 
 ## Screenshot shot list (1280×800) — **[you]**
 
-Load the unpacked `dist/` (or the installed extension) and capture:
+Use the **full-page view** for screenshots — it fills the 1280×800 frame far
+better than the narrow popup. Open it from the popup's "Open full view" link, or
+right-click the toolbar icon → Options. Then capture:
 
-1. **The popup with three `X-Env` rules** (dev / staging / prod) — the headline
+1. **The manager with three `X-Env` rules** (dev / staging / prod) — the headline
    use case: one header name, different values per environment.
 2. **Adding a rule** — the editor form filled in (header name, value, URL
    filter).
@@ -65,5 +67,5 @@ Load the unpacked `dist/` (or the installed extension) and capture:
 4. **The master enable-all / disable-all** toggle and per-rule controls.
 5. **Export / import** buttons (optional).
 
-Tip: a 1280×800 browser window with the popup open, cropped to 1280×800, works
-well. Keep any real header values non-sensitive.
+Tip: maximize the tab, capture at 1280×800, and keep any real header values
+non-sensitive. The compact popup is also worth one shot to show quick access.

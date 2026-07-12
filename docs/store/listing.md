@@ -39,6 +39,7 @@ English (United States)
 > • Simple URL matching using Chrome's declarativeNetRequest patterns
 > • Per-rule enable/disable, plus a master enable-all / disable-all toggle
 > • Duplicate rules in one click
+> • A quick popup and a full-page manager (whichever you prefer)
 > • Export and import your rules as JSON for backup or sharing
 >
 > **Private and trustworthy**

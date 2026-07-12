@@ -17,6 +17,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         popup: resolve(root, "popup/popup.html"),
+        options: resolve(root, "options/options.html"),
         "service-worker": resolve(root, "background/service-worker.ts"),
       },
       output: {
