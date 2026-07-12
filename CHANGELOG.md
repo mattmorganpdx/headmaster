@@ -9,6 +9,8 @@ When releasing, keep `package.json` and `public/manifest.json` versions in sync
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-07-12
+
 ### Fixed
 
 - Adding or editing a rule could briefly show duplicated rows (most visible in
