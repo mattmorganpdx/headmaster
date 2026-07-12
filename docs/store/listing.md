@@ -1,6 +1,8 @@
 # Chrome Web Store listing copy
 
-Paste these fields into the Web Store developer dashboard.
+This is the readable reference (Markdown). **For copy-paste into the dashboard,
+use [`submission-paste-sheet.md`](submission-paste-sheet.md)** — it has the same
+text as plain, paste-ready blocks (no `>` / `**` / backticks).
 
 ## Name
 
