@@ -9,6 +9,14 @@ When releasing, keep `package.json` and `public/manifest.json` versions in sync
 
 ## [Unreleased]
 
+### Fixed
+
+- Adding or editing a rule could briefly show duplicated rows (most visible in
+  the full-page view). `chrome.storage` reorders object keys, which defeated the
+  self-write echo check and triggered a second, overlapping render. Rendering is
+  now atomic and the echo check is order-independent. Stored data was never
+  affected — only the on-screen list.
+
 ## [1.0.0] - 2026-07-12
 
 First public release.

@@ -52,34 +52,55 @@ let activeTabUrl = "";
 // redundantly re-rendering or, on rapid writes, reverting to a stale value.
 const selfWriteSignatures: string[] = [];
 
+/**
+ * Order-independent signature of a rule list. Used to recognize the echo of our
+ * own writes — `chrome.storage` reorders object keys, so a plain JSON.stringify
+ * would not match the value that comes back through storage.onChanged.
+ */
+function rulesSignature(list: HeaderRule[]): string {
+  return JSON.stringify(
+    list.map((r) => [
+      r.id,
+      r.enabled,
+      r.label,
+      r.headerName,
+      r.headerValue,
+      r.operation,
+      r.urlFilter,
+    ]),
+  );
+}
+
 /** Persist and re-render. The service worker reconciles DNR on the change. */
 async function commit(next: HeaderRule[]): Promise<void> {
   rules = next;
-  selfWriteSignatures.push(JSON.stringify(next));
+  selfWriteSignatures.push(rulesSignature(next));
   await saveRules(rules);
   await render();
 }
 
 async function render(): Promise<void> {
-  listEl.replaceChildren();
   renderMasterToggle();
 
-  if (rules.length === 0) {
-    listEl.append(renderEmptyState());
+  // Snapshot the list, compute coverage, THEN swap the DOM in one atomic
+  // replaceChildren. Clearing before an await would let two overlapping renders
+  // each clear-then-append and duplicate rows.
+  const snapshot = rules;
+  if (snapshot.length === 0) {
+    listEl.replaceChildren(renderEmptyState());
     return;
   }
 
-  // Resolve host-access coverage for each rule (semantically, via
-  // permissions.contains) before rendering the ⚠ affordances. Only enabled
-  // rules can show the warning, so skip the check for disabled ones.
+  // Only enabled rules can show the ⚠ affordance, so skip the check otherwise.
   const coverage = await Promise.all(
-    rules.map((rule) =>
+    snapshot.map((rule) =>
       rule.enabled ? hasAccessFor(rule.urlFilter) : Promise.resolve(true),
     ),
   );
-  rules.forEach((rule, index) => {
-    listEl.append(renderRule(rule, coverage[index]));
-  });
+  const cards = snapshot.map((rule, index) =>
+    renderRule(rule, coverage[index]),
+  );
+  listEl.replaceChildren(...cards);
 }
 
 /** A friendly first-run state that teaches by offering a ready-made example. */
@@ -539,7 +560,7 @@ export async function initApp(): Promise<void> {
   // the options tab open at once). Echoes of our own writes are dropped so we
   // don't re-render redundantly or revert to a stale value.
   onRulesChanged((next) => {
-    const signature = JSON.stringify(next);
+    const signature = rulesSignature(next);
     const selfIndex = selfWriteSignatures.indexOf(signature);
     if (selfIndex !== -1) {
       selfWriteSignatures.splice(selfIndex, 1);
