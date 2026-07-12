@@ -1,8 +1,15 @@
+<img src="public/icons/128.png" alt="Headmaster icon" width="72" align="left" />
+
 # Headmaster
+
+[![CI](https://github.com/mattmorganpdx/headmaster/actions/workflows/ci.yml/badge.svg)](https://github.com/mattmorganpdx/headmaster/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 A Chrome extension that sends extra **request headers** to matching URLs —
 with **no profiles**. Every rule is independent and applies whenever its URL
 pattern matches.
+
+<br clear="left" />
 
 ## Why
 

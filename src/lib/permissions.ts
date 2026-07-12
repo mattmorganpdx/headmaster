@@ -76,7 +76,7 @@ export function originsFromUrlFilter(urlFilter: string): string[] | null {
 }
 
 /** The origins to request/check for a filter (falls back to broad access). */
-function targetOrigins(urlFilter: string): string[] {
+export function targetOriginsFor(urlFilter: string): string[] {
   return originsFromUrlFilter(urlFilter) ?? [BROAD_ORIGIN];
 }
 
@@ -85,7 +85,7 @@ function targetOrigins(urlFilter: string): string[] {
  * (e.g. a click/submit handler). Resolves to whether access was granted.
  */
 export function requestOriginsFor(urlFilter: string): Promise<boolean> {
-  return chrome.permissions.request({ origins: targetOrigins(urlFilter) });
+  return chrome.permissions.request({ origins: targetOriginsFor(urlFilter) });
 }
 
 /**
@@ -98,7 +98,7 @@ export function isCoveredBy(
 ): boolean {
   const have = granted.origins ?? [];
   if (have.includes(BROAD_ORIGIN)) return true;
-  return targetOrigins(urlFilter).every((origin) => have.includes(origin));
+  return targetOriginsFor(urlFilter).every((origin) => have.includes(origin));
 }
 
 /**

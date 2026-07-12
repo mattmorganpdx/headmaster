@@ -4,6 +4,7 @@ import {
   isCoveredBy,
   pruneUnusedOrigins,
   requestOriginsFor,
+  targetOriginsFor,
 } from "../lib/permissions";
 import {
   validateHeaderName,
@@ -24,6 +25,11 @@ const statusEl = document.getElementById("sync-status") as HTMLElement;
 const exportBtn = document.getElementById("export-btn") as HTMLButtonElement;
 const importBtn = document.getElementById("import-btn") as HTMLButtonElement;
 const importFileEl = document.getElementById("import-file") as HTMLInputElement;
+const rulesHeaderEl = document.getElementById("rules-header") as HTMLElement;
+const masterToggleEl = document.getElementById("master-toggle") as HTMLInputElement;
+const masterLabelEl = document.getElementById("master-label") as HTMLElement;
+const versionEl = document.getElementById("version") as HTMLElement;
+const headerNameEl = formEl.elements.namedItem("headerName") as HTMLInputElement;
 const operationEl = formEl.elements.namedItem("operation") as HTMLSelectElement;
 
 let rules: HeaderRule[] = [];
@@ -42,6 +48,7 @@ async function commit(next: HeaderRule[]): Promise<void> {
 async function render(): Promise<void> {
   const granted = await chrome.permissions.getAll();
   listEl.replaceChildren();
+  renderMasterToggle();
 
   if (rules.length === 0) {
     const empty = document.createElement("p");
@@ -56,6 +63,18 @@ async function render(): Promise<void> {
   }
 }
 
+/** Reflect the aggregate enabled state in the master toggle. */
+function renderMasterToggle(): void {
+  rulesHeaderEl.hidden = rules.length === 0;
+  if (rules.length === 0) return;
+
+  const enabledCount = rules.filter((r) => r.enabled).length;
+  const allEnabled = enabledCount === rules.length;
+  masterToggleEl.checked = allEnabled;
+  masterToggleEl.indeterminate = enabledCount > 0 && !allEnabled;
+  masterLabelEl.textContent = allEnabled ? "Disable all" : "Enable all";
+}
+
 function renderRule(
   rule: HeaderRule,
   granted: chrome.permissions.Permissions,
@@ -67,6 +86,8 @@ function renderRule(
   toggle.type = "checkbox";
   toggle.checked = rule.enabled;
   toggle.title = rule.enabled ? "Enabled" : "Disabled";
+  // Name the control; the checkbox role already conveys the on/off state.
+  toggle.setAttribute("aria-label", `Rule ${rule.label || rule.headerName}`);
   toggle.addEventListener("change", () => {
     void onToggle(rule, toggle);
   });
@@ -114,6 +135,11 @@ function renderRule(
   editBtn.textContent = "Edit";
   editBtn.addEventListener("click", () => startEdit(rule));
 
+  const duplicateBtn = document.createElement("button");
+  duplicateBtn.type = "button";
+  duplicateBtn.textContent = "Duplicate";
+  duplicateBtn.addEventListener("click", () => duplicateRule(rule));
+
   const deleteBtn = document.createElement("button");
   deleteBtn.type = "button";
   deleteBtn.className = "danger";
@@ -123,7 +149,7 @@ function renderRule(
     void commit(rules.filter((r) => r.id !== rule.id));
   });
 
-  actions.append(editBtn, deleteBtn);
+  actions.append(editBtn, duplicateBtn, deleteBtn);
   card.append(toggle, body, actions);
   return card;
 }
@@ -138,6 +164,43 @@ async function onToggle(rule: HeaderRule, toggle: HTMLInputElement): Promise<voi
   hideError();
   await commit(
     rules.map((r) => (r.id === rule.id ? { ...r, enabled: toggle.checked } : r)),
+  );
+}
+
+/** Insert a disabled copy of a rule right after it. */
+function duplicateRule(rule: HeaderRule): void {
+  const copy: HeaderRule = {
+    ...rule,
+    id: crypto.randomUUID(),
+    enabled: false,
+    label: rule.label ? `${rule.label} (copy)` : "",
+  };
+  const index = rules.findIndex((r) => r.id === rule.id);
+  const next = [...rules];
+  next.splice(index + 1, 0, copy);
+  void commit(next);
+}
+
+/** Enable or disable every rule at once (requesting all access in one prompt). */
+async function onMasterToggle(): Promise<void> {
+  if (!masterToggleEl.checked) {
+    await commit(rules.map((r) => ({ ...r, enabled: false })));
+    return;
+  }
+  // Enabling all: request the union of every rule's origins in a single prompt
+  // (this handler is a user gesture; request before any other await).
+  const origins = new Set<string>();
+  for (const rule of rules) {
+    for (const origin of targetOriginsFor(rule.urlFilter)) {
+      origins.add(origin);
+    }
+  }
+  if (origins.size > 0) {
+    await chrome.permissions.request({ origins: [...origins] });
+  }
+  const granted = await chrome.permissions.getAll();
+  await commit(
+    rules.map((r) => ({ ...r, enabled: isCoveredBy(r.urlFilter, granted) })),
   );
 }
 
@@ -164,6 +227,7 @@ function startEdit(rule: HeaderRule): void {
   cancelBtn.hidden = false;
   hideError();
   formEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  headerNameEl.focus();
 }
 
 function resetForm(): void {
@@ -241,6 +305,7 @@ async function importRules(file: File): Promise<void> {
 
 operationEl.addEventListener("change", syncValueVisibility);
 cancelBtn.addEventListener("click", resetForm);
+masterToggleEl.addEventListener("change", () => void onMasterToggle());
 exportBtn.addEventListener("click", exportRules);
 importBtn.addEventListener("click", () => importFileEl.click());
 importFileEl.addEventListener("change", () => {
@@ -300,11 +365,13 @@ async function onSubmit(): Promise<void> {
   };
   await commit([...rules, rule]);
   resetForm();
+  headerNameEl.focus(); // ready for rapid entry of the next rule
   // Surface the denial *after* reset, which otherwise clears the message.
   if (!granted) showError("Added as disabled — site access was denied.");
 }
 
 async function init(): Promise<void> {
+  versionEl.textContent = `v${chrome.runtime.getManifest().version}`;
   rules = await getRules();
   syncValueVisibility();
   renderSyncStatus(await getLastError());

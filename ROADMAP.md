@@ -81,15 +81,18 @@ No rule should ever fail silently.
       user-gesture pitfall of requesting during an async file read).
 - [x] Round-trip, bad-input, and rule-cap tests (11 io cases).
 
-## M4 — UX polish & branding · **[1.0]**
+## M4 — UX polish & branding · **[1.0]** ✅ done
 
-- [ ] Real branded icons at 16 / 48 / 128 (+128 store), replacing the placeholder
-      "H" glyphs in `public/icons/`.
-- [ ] Master enable-all / disable-all switch; duplicate-rule action.
-- [ ] Accessibility: `label`/`for` associations, focus management, full keyboard
-      operation, `aria-live` errors; scroll overflow for long rule lists; a
-      footer with version + urlFilter help link.
-- [ ] README: CI + license badges and a screenshot/GIF; add `SECURITY.md`.
+- [x] Real branded icons at 16 / 48 / 128 (gradient rounded square), generated
+      reproducibly by `scripts/make-icons.sh`, replacing the placeholder glyphs.
+- [x] Master enable-all / disable-all toggle (one permission prompt for the
+      union of origins); per-rule duplicate action.
+- [x] Accessibility: implicit label associations, focus management (header field
+      after add/edit), `role="alert"` errors + `aria-live` sync banner, named
+      rule toggles; `max-height` scroll for long lists; footer with version
+      (`chrome.runtime.getManifest`) + URL-filter help link.
+- [x] README: CI + license badges and icon; added `SECURITY.md`.
+      (Store screenshots are captured in M6 — they need a running browser.)
 
 ## M5 — Engineering quality & release tooling · **[1.0]**
 
