@@ -9,6 +9,10 @@ When releasing, keep `package.json` and `public/manifest.json` versions in sync
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-07-12
+
+First public release.
+
 ### Added
 
 - Per-site host permissions requested at runtime
