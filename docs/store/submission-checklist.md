@@ -5,9 +5,10 @@ Google account, or payment). Items marked **[done]** are already handled.
 
 ## 1. One-time setup
 
-- [ ] **[you]** Register a Chrome Web Store developer account and pay the **$5**
-      one-time fee, verify your contact email, and enable 2-Step Verification:
-      <https://chrome.google.com/webstore/devconsole>
+- [x] **[done]** Developer account registered, **$5** paid, trader status set to
+      **non-trader**. (If you haven't already: verify your contact email and
+      enable **2-Step Verification** — Google requires 2FA before you can
+      publish.)
 - [x] **[done]** GitHub Pages is enabled (`main` / `/docs`) and the privacy
       policy is live and rendering at
       <https://mattmorganpdx.github.io/headmaster/privacy-policy> (verified 200).
