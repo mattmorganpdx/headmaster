@@ -4,6 +4,7 @@ import {
   getLastError,
   getRules,
   onLastErrorChanged,
+  onRulesChanged,
   saveRules,
 } from "../lib/storage";
 import {
@@ -41,9 +42,15 @@ let operationEl: HTMLSelectElement;
 let rules: HeaderRule[] = [];
 let editingId: string | null = null;
 
+// Signatures of writes this view made, so we can ignore the storage.onChanged
+// echoes of our own saves (which fire in the writing context too) rather than
+// redundantly re-rendering or, on rapid writes, reverting to a stale value.
+const selfWriteSignatures: string[] = [];
+
 /** Persist and re-render. The service worker reconciles DNR on the change. */
 async function commit(next: HeaderRule[]): Promise<void> {
   rules = next;
+  selfWriteSignatures.push(JSON.stringify(next));
   await saveRules(rules);
   await render();
 }
@@ -446,5 +453,20 @@ export async function initApp(): Promise<void> {
   syncValueVisibility();
   renderSyncStatus(await getLastError());
   onLastErrorChanged(renderSyncStatus);
+
+  // Keep this view in sync with edits made in another view (e.g. the popup and
+  // the options tab open at once). Echoes of our own writes are dropped so we
+  // don't re-render redundantly or revert to a stale value.
+  onRulesChanged((next) => {
+    const signature = JSON.stringify(next);
+    const selfIndex = selfWriteSignatures.indexOf(signature);
+    if (selfIndex !== -1) {
+      selfWriteSignatures.splice(selfIndex, 1);
+      return;
+    }
+    rules = next;
+    void render();
+  });
+
   await render();
 }

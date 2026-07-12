@@ -22,6 +22,9 @@ When releasing, keep `package.json` and `public/manifest.json` versions in sync
   layout; the popup gains an "Open full view" link. The full page also makes the
   site-access grant flow more reliable (a tab isn't dismissed by the permission
   prompt the way a popup can be).
+- Open views (e.g. the popup and the options tab at once) now stay in sync via a
+  storage change listener, so an edit in one is reflected in the other instead
+  of a stale view overwriting it.
 - Branded icons, accessibility improvements, and a popup footer.
 - ESLint + Prettier, a release packaging script (`npm run package`), and this
   changelog.
