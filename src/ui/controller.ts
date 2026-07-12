@@ -443,10 +443,15 @@ export async function initApp(): Promise<void> {
   });
 
   // "Open full view" opens the options page in a tab. It's hidden by CSS on the
-  // options page itself, so wiring it unconditionally is safe.
-  document
-    .getElementById("open-full-view")
-    ?.addEventListener("click", () => chrome.runtime.openOptionsPage());
+  // options page itself, so wiring it unconditionally is safe. Looked up like
+  // every other element (a missing button is an authoring bug and should fail
+  // loudly, not silently no-op).
+  const openFullViewBtn = document.getElementById(
+    "open-full-view",
+  ) as HTMLButtonElement;
+  openFullViewBtn.addEventListener("click", () =>
+    chrome.runtime.openOptionsPage(),
+  );
 
   versionEl.textContent = `v${chrome.runtime.getManifest().version}`;
   rules = await getRules();
