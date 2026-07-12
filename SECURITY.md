@@ -5,7 +5,7 @@
 Please report security issues **privately** rather than opening a public issue.
 
 - Preferred: open a [GitHub security advisory](https://github.com/mattmorganpdx/headmaster/security/advisories/new).
-- Or email: matt.morgan@digs.com
+- Or email: mattmorganpdx@gmail.com
 
 Please include steps to reproduce and the extension version (shown in the popup
 footer). We aim to acknowledge reports within a few days.

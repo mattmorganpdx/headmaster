@@ -56,5 +56,5 @@ recorded in the project's `CHANGELOG.md`.
 
 ## Contact
 
-Questions or concerns: **matt.morgan@digs.com**, or open an issue at
+Questions or concerns: **mattmorganpdx@gmail.com**, or open an issue at
 <https://github.com/mattmorganpdx/headmaster>.
