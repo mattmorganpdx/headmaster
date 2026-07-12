@@ -34,6 +34,9 @@ When releasing, keep `package.json` and `public/manifest.json` versions in sync
 - Duplicating a rule now inherits the original's enabled state (it reuses the
   same URL filter, so access is already granted) instead of creating a
   disabled/greyed-out copy.
+- The master toggle's label now describes state ("All enabled" / "All disabled" /
+  "N of M enabled") instead of the action, so a checked box no longer sits next
+  to the word "Disable".
 
 ## [0.1.0] - 2026-07-10
 

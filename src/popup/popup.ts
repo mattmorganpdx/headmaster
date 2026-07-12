@@ -77,11 +77,20 @@ function renderMasterToggle(): void {
   rulesHeaderEl.hidden = rules.length === 0;
   if (rules.length === 0) return;
 
+  const total = rules.length;
   const enabledCount = rules.filter((r) => r.enabled).length;
-  const allEnabled = enabledCount === rules.length;
+  const allEnabled = enabledCount === total;
+
+  // The checkbox mirrors state: checked = all on, unchecked = all off, a dash
+  // (indeterminate) = some on. The label describes that state — not the action —
+  // so a checked box never sits next to the word "Disable".
   masterToggleEl.checked = allEnabled;
   masterToggleEl.indeterminate = enabledCount > 0 && !allEnabled;
-  masterLabelEl.textContent = allEnabled ? "Disable all" : "Enable all";
+  masterLabelEl.textContent = allEnabled
+    ? "All enabled"
+    : enabledCount === 0
+      ? "All disabled"
+      : `${enabledCount} of ${total} enabled`;
 }
 
 function renderRule(rule: HeaderRule, covered: boolean): HTMLElement {
