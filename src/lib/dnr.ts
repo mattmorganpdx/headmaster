@@ -34,7 +34,7 @@ export interface DnrRule {
     type: "modifyHeaders";
     requestHeaders: Array<{
       header: string;
-      operation: "set" | "remove";
+      operation: "set" | "append" | "remove";
       value?: string;
     }>;
   };
@@ -57,13 +57,13 @@ export function toDnrRule(rule: HeaderRule, id: number): DnrRule {
     action: {
       type: "modifyHeaders",
       requestHeaders: [
-        rule.operation === "set"
-          ? {
+        rule.operation === "remove"
+          ? { header: rule.headerName, operation: "remove" }
+          : {
               header: rule.headerName,
-              operation: "set",
+              operation: rule.operation, // "set" or "append"
               value: rule.headerValue,
-            }
-          : { header: rule.headerName, operation: "remove" },
+            },
       ],
     },
     condition: {

@@ -111,10 +111,37 @@ describe("parseRules rejects malformed input", () => {
   it("invalid operation", () => {
     const bad = JSON.stringify({
       version: 1,
+      rules: [{ operation: "nope", headerName: "X-Env", urlFilter: "||a.com" }],
+    });
+    expect(() => parseRules(bad)).toThrow(/operation/i);
+  });
+
+  it("append without a value", () => {
+    const bad = JSON.stringify({
+      version: 1,
       rules: [
         { operation: "append", headerName: "X-Env", urlFilter: "||a.com" },
       ],
     });
-    expect(() => parseRules(bad)).toThrow(/operation/i);
+    expect(() => parseRules(bad)).toThrow(/missing a value/i);
+  });
+});
+
+describe("parseRules accepts append", () => {
+  it("round-trips an append rule with its value", () => {
+    const bad = JSON.stringify({
+      version: 1,
+      rules: [
+        {
+          operation: "append",
+          headerName: "X-Env",
+          headerValue: "a=1",
+          urlFilter: "||a.com",
+        },
+      ],
+    });
+    const [rule] = parseRules(bad);
+    expect(rule.operation).toBe("append");
+    expect(rule.headerValue).toBe("a=1");
   });
 });

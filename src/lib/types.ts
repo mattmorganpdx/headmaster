@@ -16,10 +16,13 @@ export interface HeaderRule {
   label: string;
   /** Request header name, e.g. "X-Env". */
   headerName: string;
-  /** Value to set. Ignored when `operation === "remove"`. */
+  /** Value to set/append. Ignored when `operation === "remove"`. */
   headerValue: string;
-  /** Whether to set the header to `headerValue` or strip it from the request. */
-  operation: "set" | "remove";
+  /**
+   * Set the header to `headerValue`, append `headerValue` (for multi-value
+   * headers), or strip the header from the request.
+   */
+  operation: "set" | "append" | "remove";
   /**
    * Chrome declarativeNetRequest `urlFilter` pattern.
    * See README for syntax; e.g. "||dev.example.com" matches that host.

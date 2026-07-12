@@ -64,7 +64,9 @@ function normalizeRule(raw: unknown, index: number): HeaderRule {
   if (!isRecord(raw)) throw new Error(`${where} is not an object.`);
 
   const operation =
-    raw.operation === "set" || raw.operation === "remove"
+    raw.operation === "set" ||
+    raw.operation === "append" ||
+    raw.operation === "remove"
       ? raw.operation
       : null;
   if (!operation) throw new Error(`${where} has an invalid operation.`);
@@ -78,7 +80,7 @@ function normalizeRule(raw: unknown, index: number): HeaderRule {
   if (filterError) throw new Error(`${where}: ${filterError}`);
 
   let headerValue = "";
-  if (operation === "set") {
+  if (operation !== "remove") {
     headerValue = typeof raw.headerValue === "string" ? raw.headerValue : "";
     if (!headerValue) throw new Error(`${where} is missing a value.`);
     const valueError = validateHeaderValue(headerValue);

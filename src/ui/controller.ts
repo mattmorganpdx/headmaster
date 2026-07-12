@@ -18,6 +18,7 @@ import {
   validateUrlFilter,
 } from "../lib/validate";
 import { parseRules, serializeRules } from "../lib/io";
+import { matchesUrlFilter } from "../lib/match";
 import type { HeaderRule } from "../lib/types";
 
 // Element references, assigned in initApp() once the template is injected.
@@ -36,11 +37,15 @@ let rulesHeaderEl: HTMLElement;
 let masterToggleEl: HTMLInputElement;
 let masterLabelEl: HTMLElement;
 let versionEl: HTMLElement;
+let tabStatusEl: HTMLElement;
 let headerNameEl: HTMLInputElement;
 let operationEl: HTMLSelectElement;
 
 let rules: HeaderRule[] = [];
 let editingId: string | null = null;
+
+// Popup-only: the active tab's URL, used to show how many rules apply here.
+let activeTabUrl = "";
 
 // Signatures of writes this view made, so we can ignore the storage.onChanged
 // echoes of our own saves (which fire in the writing context too) rather than
@@ -60,10 +65,7 @@ async function render(): Promise<void> {
   renderMasterToggle();
 
   if (rules.length === 0) {
-    const empty = document.createElement("p");
-    empty.className = "empty";
-    empty.textContent = "No rules yet. Add one below.";
-    listEl.append(empty);
+    listEl.append(renderEmptyState());
     return;
   }
 
@@ -80,10 +82,63 @@ async function render(): Promise<void> {
   });
 }
 
+/** A friendly first-run state that teaches by offering a ready-made example. */
+function renderEmptyState(): HTMLElement {
+  const wrap = document.createElement("div");
+  wrap.className = "empty";
+
+  const title = document.createElement("p");
+  title.className = "empty__title";
+  title.textContent = "No rules yet.";
+  wrap.append(title);
+
+  const hint = document.createElement("p");
+  hint.className = "empty__hint";
+  hint.textContent =
+    "A rule sends (or removes) a header on URLs that match a pattern — for example, send X-Env: dev to ||dev.example.com.";
+  wrap.append(hint);
+
+  const example = document.createElement("button");
+  example.type = "button";
+  example.className = "empty__example";
+  example.textContent = "Fill in this example";
+  example.addEventListener("click", fillExample);
+  wrap.append(example);
+
+  return wrap;
+}
+
+/** Populate the editor with the canonical example so the user can add or tweak it. */
+function fillExample(): void {
+  setField("label", "Dev env header");
+  setField("headerName", "X-Env");
+  setField("headerValue", "dev");
+  setField("urlFilter", "||dev.example.com");
+  operationEl.value = "set";
+  syncValueVisibility();
+  hideError();
+  headerNameEl.focus();
+}
+
+/** Popup-only: show how many enabled rules apply to the current tab. */
+function renderTabStatus(): void {
+  if (!activeTabUrl) {
+    tabStatusEl.textContent = "";
+    return;
+  }
+  const count = rules.filter(
+    (r) => r.enabled && matchesUrlFilter(r.urlFilter, activeTabUrl),
+  ).length;
+  tabStatusEl.textContent =
+    count > 0 ? `${count} active on this page` : "None active on this page";
+}
+
 /** Reflect the aggregate enabled state in the master toggle. */
 function renderMasterToggle(): void {
   rulesHeaderEl.hidden = rules.length === 0;
   if (rules.length === 0) return;
+
+  renderTabStatus();
 
   const total = rules.length;
   const enabledCount = rules.filter((r) => r.enabled).length;
@@ -130,7 +185,9 @@ function renderRule(rule: HeaderRule, covered: boolean): HTMLElement {
   header.textContent =
     rule.operation === "remove"
       ? `remove ${rule.headerName}`
-      : `${rule.headerName}: ${rule.headerValue}`;
+      : rule.operation === "append"
+        ? `${rule.headerName} += ${rule.headerValue}`
+        : `${rule.headerName}: ${rule.headerValue}`;
   header.title = header.textContent; // full value on hover when truncated
   body.append(header);
 
@@ -360,9 +417,9 @@ async function onSubmit(): Promise<void> {
   if (headerNameError) return showError(headerNameError);
   const urlFilterError = validateUrlFilter(urlFilter);
   if (urlFilterError) return showError(urlFilterError);
-  if (operation === "set") {
+  if (operation !== "remove") {
     if (!headerValue)
-      return showError("Value is required when setting a header.");
+      return showError(`Value is required when you ${operation} a header.`);
     const headerValueError = validateHeaderValue(headerValue);
     if (headerValueError) return showError(headerValueError);
   }
@@ -370,7 +427,7 @@ async function onSubmit(): Promise<void> {
   const draft: Omit<HeaderRule, "id" | "enabled"> = {
     label: getField("label"),
     headerName,
-    headerValue: operation === "set" ? headerValue : "",
+    headerValue: operation === "remove" ? "" : headerValue,
     operation,
     urlFilter,
   };
@@ -426,6 +483,7 @@ export async function initApp(): Promise<void> {
   masterToggleEl = document.getElementById("master-toggle") as HTMLInputElement;
   masterLabelEl = document.getElementById("master-label") as HTMLElement;
   versionEl = document.getElementById("version") as HTMLElement;
+  tabStatusEl = document.getElementById("tab-status") as HTMLElement;
   headerNameEl = formEl.elements.namedItem("headerName") as HTMLInputElement;
   operationEl = formEl.elements.namedItem("operation") as HTMLSelectElement;
 
@@ -456,6 +514,22 @@ export async function initApp(): Promise<void> {
   );
 
   versionEl.textContent = `v${chrome.runtime.getManifest().version}`;
+
+  // In the popup, opening the action grants activeTab, so we can read the
+  // current tab's URL to show which rules apply here. (In the options tab the
+  // "current tab" is the options page itself, so we skip it.)
+  if (document.body.classList.contains("app--popup")) {
+    try {
+      const [tab] = await chrome.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
+      activeTabUrl = tab?.url ?? "";
+    } catch {
+      activeTabUrl = "";
+    }
+  }
+
   rules = await getRules();
   syncValueVisibility();
   renderSyncStatus(await getLastError());

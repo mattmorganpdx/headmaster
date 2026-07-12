@@ -95,8 +95,15 @@ h2 {
 
 .rules-header {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
   margin-bottom: 8px;
+}
+
+.tab-status {
+  font-size: 11px;
+  color: var(--muted);
 }
 
 .master-toggle {
@@ -119,7 +126,25 @@ h2 {
 .empty {
   color: var(--muted);
   text-align: center;
-  padding: 12px 0;
+  padding: 16px 8px;
+}
+
+.empty__title {
+  margin: 0 0 4px;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.empty__hint {
+  margin: 0 auto 12px;
+  max-width: 42ch;
+  font-size: 12px;
+}
+
+.empty__example {
+  background: var(--card);
+  color: var(--fg);
+  border: 1px solid var(--border);
 }
 
 .rule {

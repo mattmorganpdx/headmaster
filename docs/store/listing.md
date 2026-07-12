@@ -36,7 +36,9 @@ English (United States)
 >
 > **Features**
 > • Independent rules — the same header name can have different values per URL
+> • Set, append, or remove request headers
 > • Simple URL matching using Chrome's declarativeNetRequest patterns
+> • See at a glance how many rules apply to the current tab
 > • Per-rule enable/disable, plus a master enable-all / disable-all toggle
 > • Duplicate rules in one click
 > • A quick popup and a full-page manager (whichever you prefer)

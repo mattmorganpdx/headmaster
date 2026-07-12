@@ -31,6 +31,10 @@ When releasing, keep `package.json` and `public/manifest.json` versions in sync
 - "URL filter help" now opens an in-extension help page (with the match-pattern
   grammar and matches/doesn't-match examples) instead of leaving for GitHub; the
   form hint wording was de-jargoned ("Match pattern" instead of "DNR pattern").
+- `append` operation for multi-value request headers, alongside set/remove.
+- Friendlier first-run state with a one-click "Fill in this example" button.
+- The popup shows how many rules apply to the current tab (uses `activeTab`; the
+  URL is read only to compute the count and is never stored or transmitted).
 - Branded icons, accessibility improvements, and a popup footer.
 - ESLint + Prettier, a release packaging script (`npm run package`), and this
   changelog.

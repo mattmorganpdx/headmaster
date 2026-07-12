@@ -31,6 +31,13 @@ describe("toDnrRule", () => {
     expect(dnr.condition.resourceTypes).toContain("xmlhttprequest");
   });
 
+  it("maps an 'append' rule with a value", () => {
+    const dnr = toDnrRule(rule({ operation: "append", headerValue: "x=1" }), 3);
+    expect(dnr.action.requestHeaders).toEqual([
+      { header: "X-Env", operation: "append", value: "x=1" },
+    ]);
+  });
+
   it("maps a 'remove' rule with no value", () => {
     const dnr = toDnrRule(rule({ operation: "remove", headerValue: "" }), 7);
     expect(dnr.id).toBe(7);

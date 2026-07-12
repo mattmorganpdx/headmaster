@@ -18,6 +18,12 @@ practices** tab. Keep them short and specific — reviewers read every one.
 > locally via `chrome.storage.local` so they persist between sessions. No data is
 > transmitted off the device.
 
+## `activeTab`
+
+> When the user opens the popup, Headmaster reads the current tab's URL to show
+> how many of their rules apply to that page. The URL is used only to compute
+> that count in the popup; it is never stored or transmitted.
+
 ## Host permissions (`optional_host_permissions: *://*/*`)
 
 > Host access is requested **at runtime, per site**, only when the user adds or

@@ -26,6 +26,7 @@ export const APP_HTML = `
     </div>
 
     <div id="rules-header" class="rules-header" hidden>
+      <span id="tab-status" class="tab-status"></span>
       <label class="master-toggle" title="Enable or disable all rules">
         <input type="checkbox" id="master-toggle" />
         <span id="master-label">All enabled</span>
@@ -51,6 +52,7 @@ export const APP_HTML = `
           <span>Operation</span>
           <select name="operation">
             <option value="set">Set</option>
+            <option value="append">Append</option>
             <option value="remove">Remove</option>
           </select>
         </label>

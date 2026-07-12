@@ -45,6 +45,9 @@ collect or transmit any of the following:
   through its declarative rules engine. This API modifies headers **without the
   extension ever reading your requests or responses**.
 - **`storage`** — saves your rules locally so they persist between sessions.
+- **`activeTab`** — when you open the popup, Headmaster reads the current tab's
+  URL to show how many of your rules apply to that page. It is used only for that
+  count and is never stored or transmitted.
 - **Host access (`optional_host_permissions`)** — requested **per site, at
   runtime**, only when you add or enable a rule for that site. Headmaster can
   only modify headers on hosts you have explicitly granted.

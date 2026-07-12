@@ -3,7 +3,11 @@
   "name": "Headmaster",
   "version": "0.1.0",
   "description": "Send extra request headers to matching URLs — no profiles, every rule independent.",
-  "permissions": ["declarativeNetRequestWithHostAccess", "storage"],
+  "permissions": [
+    "declarativeNetRequestWithHostAccess",
+    "storage",
+    "activeTab"
+  ],
   "optional_host_permissions": ["*://*/*"],
   "background": {
     "service_worker": "background/service-worker.js",
