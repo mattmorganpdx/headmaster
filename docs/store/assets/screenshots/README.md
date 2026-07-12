@@ -1,24 +1,20 @@
 # Store screenshots
 
-Drop the captures here, named exactly as below (the number is the display order;
-#1 is the hero shot the store shows first).
+Captured and ready to upload — all **1280×800** (the Web Store requirement), in
+display order (#1 is the hero shot the store shows first).
 
-Target size is **1280×800** (Web Store requirement). Capture clean and don't
-worry about exact pixels — raw captures can be normalized to 1280×800
-afterward (padded, not stretched).
+| File                         | What it shows                                                                                                                                                                                                                                        |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `01-three-env-rules.png`     | **Hero.** Full-page manager with three env rules — `X-API-KEY` set to a dev / test / prod value on `\|\|dev.example.com` / `\|\|testing.example.com` / `\|\|prod.example.com`. The "one header, different value per environment, no profiles" story. |
+| `02-add-rule.png`            | Full-page view: the friendly first-run empty state ("Fill in this example") with the **Add rule** form filled in below (label, header, Set, value, URL filter) and the footer.                                                                       |
+| `03-popup-active-on-tab.png` | The **popup** open on google.com showing **"1 active on this page"**, the rule list with toggles, and the toolbar badge count. Quick access + proof it's working.                                                                                    |
+| `04-site-access-prompt.png`  | Chrome's **per-site permission prompt** when a rule is enabled ("Read and change your data on … dev.example.com"). The per-site / privacy story.                                                                                                     |
+| `05-popup-add-rule.png`      | The **popup** on example.com adding a rule, showing the compact editor plus the footer's "Open full view" and "URL filter help" links.                                                                                                               |
 
-| File                         | What it shows                                                                                                                                                                                             |
-| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `01-three-env-rules.png`     | **Hero.** Full-page manager with three `X-Env` rules — `dev` → `\|\|dev.example.com`, `staging` → `\|\|staging.example.com`, `prod` → `\|\|example.com`. The "one header, three envs, no profiles" story. |
-| `02-add-rule.png`            | The editor form filled in: header name `X-Env`, value, Operation = Set, URL filter `\|\|dev.example.com`. Shows how you create a rule.                                                                    |
-| `03-popup-active-on-tab.png` | The **popup** open on a page a rule matches, showing "N active on this page" plus the rule list with toggles. Quick access + proof it's working.                                                          |
-| `04-site-access-prompt.png`  | The Chrome per-site permission prompt appearing when you enable a rule (the privacy / per-site story). If it's hard to catch, replace with the in-app **URL filter help** page.                           |
-| `05-export-import.png`       | The Export / Import buttons and the master enable-all / disable-all toggle — the management surface.                                                                                                      |
+## Notes
 
-## Capture tips
-
-- Use the **full-page view** for 01, 02, 05 (open it from the popup's "Open full
-  view" link); use the **popup** for 03.
-- Keep header values non-sensitive (the `X-Env` / `dev` example is perfect).
-- PNG preferred. Light or dark theme is fine — pick whichever looks cleaner and
-  keep all five consistent.
+- All five are already 1280×800 — no resizing needed.
+- Values are non-sensitive demo data (example.com / google.com, placeholder
+  keys). Keep it that way if you re-shoot.
+- A few footers read `v1.0.0` (captured before the 1.0.1 reload); harmless, since
+  the store doesn't require screenshots to match the published version.

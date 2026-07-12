@@ -33,8 +33,9 @@ Google account, or payment). Items marked **[done]** are already handled.
 - [ ] Small promo tile **440×280** — ready: `docs/store/assets/promo-440x280.png`.
 - [ ] (Optional) Marquee **1400×560** — ready:
       `docs/store/assets/marquee-1400x560.png`.
-- [ ] **[you]** 1–5 screenshots at **1280×800** — the one graphic not yet made
-      (see shot list below).
+- [x] **[done]** 5 screenshots at **1280×800** captured and in
+      `docs/store/assets/screenshots/` (see that folder's README). Upload them in
+      `01`–`05` order.
 
 ## 5. Privacy practices tab (copy from `permissions-justifications.md`)
 
