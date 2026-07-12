@@ -172,7 +172,9 @@ async function onToggle(
   }
   hideError();
   await commit(
-    rules.map((r) => (r.id === rule.id ? { ...r, enabled: toggle.checked } : r)),
+    rules.map((r) =>
+      r.id === rule.id ? { ...r, enabled: toggle.checked } : r,
+    ),
   );
 }
 
