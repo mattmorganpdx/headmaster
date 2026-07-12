@@ -10,6 +10,9 @@ Google account, or payment).
 - [ ] **[you]** Enable GitHub Pages so the privacy policy has a public URL:
       repo **Settings → Pages → Source: Deploy from a branch → `main` / `/docs`**.
       This publishes <https://mattmorganpdx.github.io/headmaster/privacy-policy>.
+      After the Pages build finishes, **open that URL to confirm it loads** (it
+      is the extensionless form GitHub Pages serves for `privacy-policy.html`);
+      use the exact working URL in the listing's Privacy policy field.
 
 ## 2. Build the upload package
 
