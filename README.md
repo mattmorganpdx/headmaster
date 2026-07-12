@@ -57,20 +57,14 @@ Then in Chrome:
 2. Enable **Developer mode**
 3. **Load unpacked** → select the `dist/` folder
 
-## URL filter syntax
+## URL filters
 
-The URL filter uses DNR's
-[`urlFilter`](https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#property-RuleCondition-urlFilter)
-patterns (not content-script match patterns):
+Each rule matches requests by URL using Chrome's
+[`declarativeNetRequest` `urlFilter`](https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#property-RuleCondition-urlFilter)
+syntax — e.g. `||dev.example.com` matches that host and its subdomains.
 
-| Pattern               | Matches                                 |
-| --------------------- | --------------------------------------- |
-| `\|\|dev.example.com` | requests to that host (domain-anchored) |
-| `\|https://`          | anchored to the start of the URL        |
-| `*/api/*`             | any URL whose path contains `/api/`     |
-| `example.com`         | substring match anywhere in the URL     |
-
-`*` is a wildcard; `\|` anchors the start/end; `\|\|` anchors a domain.
+The extension ships a full reference: click **URL filter help** in the popup or
+options footer (source: [`public/help/help.html`](public/help/help.html)).
 
 ## Development
 
