@@ -58,6 +58,19 @@ h2 {
   border-radius: 6px;
 }
 
+.toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.toolbar button {
+  flex: 1;
+  background: var(--card);
+  color: var(--fg);
+  border: 1px solid var(--border);
+}
+
 .rule-list {
   display: flex;
   flex-direction: column;

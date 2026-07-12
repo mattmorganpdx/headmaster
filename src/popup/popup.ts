@@ -10,6 +10,7 @@ import {
   validateHeaderValue,
   validateUrlFilter,
 } from "../lib/validate";
+import { parseRules, serializeRules } from "../lib/io";
 import type { HeaderRule } from "../lib/types";
 
 const listEl = document.getElementById("rule-list") as HTMLElement;
@@ -20,6 +21,9 @@ const cancelBtn = document.getElementById("cancel-btn") as HTMLButtonElement;
 const valueField = document.getElementById("value-field") as HTMLElement;
 const errorEl = document.getElementById("form-error") as HTMLElement;
 const statusEl = document.getElementById("sync-status") as HTMLElement;
+const exportBtn = document.getElementById("export-btn") as HTMLButtonElement;
+const importBtn = document.getElementById("import-btn") as HTMLButtonElement;
+const importFileEl = document.getElementById("import-file") as HTMLInputElement;
 const operationEl = formEl.elements.namedItem("operation") as HTMLSelectElement;
 
 let rules: HeaderRule[] = [];
@@ -203,8 +207,47 @@ function renderSyncStatus(message: string | null): void {
   }
 }
 
+/** Download all rules as a JSON backup file. */
+function exportRules(): void {
+  if (rules.length === 0) return showError("No rules to export.");
+  hideError();
+  const blob = new Blob([serializeRules(rules)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = "headmaster-rules.json";
+  anchor.click();
+  // Defer revoke so the download has been captured — revoking in the same tick
+  // can cancel it.
+  setTimeout(() => URL.revokeObjectURL(url), 0);
+}
+
+/** Append rules from a backup file, validating shape and content. */
+async function importRules(file: File): Promise<void> {
+  let imported: HeaderRule[];
+  try {
+    imported = parseRules(await file.text());
+  } catch (error) {
+    return showError(error instanceof Error ? error.message : "Import failed.");
+  }
+  if (imported.length === 0) return showError("That file contained no rules.");
+
+  hideError();
+  await commit([...rules, ...imported]);
+  // Enabled imports that lack host access are flagged with the ⚠ affordance,
+  // where a click (a user gesture) grants it — permissions.request can't run
+  // here because awaiting the file read broke the original gesture chain.
+}
+
 operationEl.addEventListener("change", syncValueVisibility);
 cancelBtn.addEventListener("click", resetForm);
+exportBtn.addEventListener("click", exportRules);
+importBtn.addEventListener("click", () => importFileEl.click());
+importFileEl.addEventListener("change", () => {
+  const file = importFileEl.files?.[0];
+  if (file) void importRules(file);
+  importFileEl.value = ""; // allow re-selecting the same file
+});
 
 formEl.addEventListener("submit", (event) => {
   event.preventDefault();

@@ -69,14 +69,17 @@ No rule should ever fail silently.
       shows it in an `aria-live` banner.
 - [x] Unit tests for all three validators (9 cases).
 
-## M3 — Config export / import · **[1.0]**
+## M3 — Config export / import · **[1.0]** ✅ done
 
-- [ ] New `src/lib/io.ts` — versioned `serializeRules` / `parseRules` with shape
-      validation.
-- [ ] Export a `.json` via `Blob` download; import via file input, then
-      re-request host permissions (M1) for imported rules.
-- [ ] Export / Import buttons in `popup.html` + `popup.ts`.
-- [ ] Round-trip and bad-input-rejection tests.
+- [x] New `src/lib/io.ts` — versioned `serializeRules` / `parseRules` with shape
+      validation (reuses the M2 validators), fresh ids on import, and a
+      `MAX_IMPORT_RULES` cap.
+- [x] Export a `.json` via `Blob` download (deferred `revokeObjectURL`); import
+      via file input, appending validated rules.
+- [x] Export / Import buttons in `popup.html` + `popup.ts`. Imported enabled
+      rules that lack host access surface the M1 ⚠ one-click grant (avoids the
+      user-gesture pitfall of requesting during an async file read).
+- [x] Round-trip, bad-input, and rule-cap tests (11 io cases).
 
 ## M4 — UX polish & branding · **[1.0]**
 

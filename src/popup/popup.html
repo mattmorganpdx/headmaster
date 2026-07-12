@@ -20,6 +20,17 @@
         hidden
       ></p>
 
+      <div class="toolbar">
+        <button type="button" id="export-btn">Export</button>
+        <button type="button" id="import-btn">Import</button>
+        <input
+          type="file"
+          id="import-file"
+          accept="application/json,.json"
+          hidden
+        />
+      </div>
+
       <section id="rule-list" class="rule-list" aria-label="Header rules"></section>
 
       <section class="editor">
