@@ -69,9 +69,9 @@ export const APP_HTML = `
             required
           />
           <small class="hint">
-            DNR pattern. e.g. <code>||dev.example.com</code> (host),
-            <code>*/api/*</code> (path contains), <code>|https://</code>
-            (URL start).
+            Match pattern. e.g. <code>||dev.example.com</code> (a host and its
+            subdomains), <code>*/api/*</code> (path contains),
+            <code>|https://</code> (URL start). See "URL filter help" below.
           </small>
         </label>
 
@@ -91,10 +91,7 @@ export const APP_HTML = `
       <button type="button" id="open-full-view" class="linklike open-full-view">
         Open full view ⤢
       </button>
-      <a
-        href="https://github.com/mattmorganpdx/headmaster#url-filter-syntax"
-        target="_blank"
-        rel="noopener"
+      <a href="/help/help.html" target="_blank" rel="noopener"
         >URL filter help</a
       >
     </span>

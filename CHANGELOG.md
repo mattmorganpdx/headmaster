@@ -28,6 +28,9 @@ When releasing, keep `package.json` and `public/manifest.json` versions in sync
 - In the popup, long header values and URL filters truncate to a single line
   with an ellipsis (full text on hover) instead of wrapping into a messy block;
   the full-page view still shows them in full.
+- "URL filter help" now opens an in-extension help page (with the match-pattern
+  grammar and matches/doesn't-match examples) instead of leaving for GitHub; the
+  form hint wording was de-jargoned ("Match pattern" instead of "DNR pattern").
 - Branded icons, accessibility improvements, and a popup footer.
 - ESLint + Prettier, a release packaging script (`npm run package`), and this
   changelog.
