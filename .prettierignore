@@ -1,5 +1,6 @@
 dist/
 node_modules/
 *.zip
+headmaster-v*/
 public/icons/
 package-lock.json
