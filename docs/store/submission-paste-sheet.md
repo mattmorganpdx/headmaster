@@ -58,6 +58,23 @@ Each rule compiles to one Chrome declarativeNetRequest rule with its own URL fil
 **Category:** Developer Tools
 **Language:** English (United States)
 
+**Additional fields (optional but recommended)**
+
+Homepage URL:
+
+```
+https://github.com/mattmorganpdx/headmaster
+```
+
+Support URL:
+
+```
+https://github.com/mattmorganpdx/headmaster/issues
+```
+
+(Leave any "Official URL" / verified-domain option blank — that needs Search
+Console domain verification, which isn't available for a shared github.io host.)
+
 **Graphics to upload**
 
 - Store icon 128×128 — `public/icons/128.png`
