@@ -2,12 +2,15 @@
 
 # Headmaster
 
+[![Chrome Web Store](https://img.shields.io/badge/Chrome%20Web%20Store-Install-blue?logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/headmaster/onammnmlgadchflpaadmjbaeobgnalge)
 [![CI](https://github.com/mattmorganpdx/headmaster/actions/workflows/ci.yml/badge.svg)](https://github.com/mattmorganpdx/headmaster/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 A Chrome extension that sends extra **request headers** to matching URLs —
 with **no profiles**. Every rule is independent and applies whenever its URL
 pattern matches.
+
+**[Install from the Chrome Web Store →](https://chromewebstore.google.com/detail/headmaster/onammnmlgadchflpaadmjbaeobgnalge)**
 
 <br clear="left" />
 
@@ -44,7 +47,11 @@ touches sites you have explicitly configured. A rule that can't be scoped to a
 single host (a path-only or substring filter) will ask for broader access, and
 an enabled rule that lacks access is flagged in the popup with a one-click grant.
 
-## Install (unpacked)
+## Install
+
+**[Chrome Web Store](https://chromewebstore.google.com/detail/headmaster/onammnmlgadchflpaadmjbaeobgnalge)** — the easiest way.
+
+### From source (unpacked)
 
 ```sh
 npm install
