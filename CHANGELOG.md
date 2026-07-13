@@ -9,6 +9,14 @@ When releasing, keep `package.json` and `public/manifest.json` versions in sync
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-07-13
+
+### Changed
+
+- Renamed the extension to "Headmaster — HTTP Header Editor" so it's
+  discoverable when searching the Web Store for "header" (the store has no
+  keyword field; the title is the strongest signal). No functional change.
+
 ## [1.0.1] - 2026-07-12
 
 ### Fixed

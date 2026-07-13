@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Headmaster",
-  "version": "1.0.1",
+  "name": "Headmaster — HTTP Header Editor",
+  "version": "1.0.2",
   "description": "Send extra request headers to matching URLs — no profiles, every rule independent.",
   "permissions": [
     "declarativeNetRequestWithHostAccess",

@@ -1,6 +1,6 @@
 {
   "name": "headmaster",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Send extra request headers to matching URLs — no profiles, every rule independent.",
   "license": "MIT",
   "type": "module",
