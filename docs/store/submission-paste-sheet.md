@@ -24,9 +24,9 @@ Add custom request headers to URLs by pattern. No profiles — every rule is ind
 **Description**
 
 ```
-Headmaster adds, overrides, or removes HTTP request headers on the URLs you choose — with no profiles.
+Headmaster is a simple, private way to modify HTTP request headers — add, edit, or remove them per site, with no profiles.
 
-Other header editors force a single "active profile," so sending the same header with different values to different environments is awkward. Headmaster throws that model out. Every rule is independent and always evaluated, so you can send:
+Add custom request headers, override existing values, or remove headers on the URLs you choose. Other header editors lock you into a single "active profile," so sending the same header with different values across environments is awkward. Headmaster drops that model — every rule is independent and always evaluated, so you can send:
 
 • X-Env: dev to dev.example.com
 • X-Env: staging to staging.example.com
